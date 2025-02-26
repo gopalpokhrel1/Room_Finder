@@ -12,6 +12,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
+import LocationPicker from '../components/maps/LocationPicker';
 
 const HomeOwnerScreen = () => {
   const [step, setStep] = useState(1);
@@ -30,6 +31,10 @@ const HomeOwnerScreen = () => {
       gym: false,
     },
     room_image_url: [],
+    location: {
+      type: 'Point',
+      coordinates: [27.716842, 85.321386],
+    },
   });
 
   const [errors, setErrors] = useState({});
@@ -45,7 +50,6 @@ const HomeOwnerScreen = () => {
     if (!form.areaSize.trim()) newErrors.areaSize = 'Area size is required';
     if (!form.availableFrom.trim())
       newErrors.availableFrom = 'Available from date is required';
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -91,11 +95,17 @@ const HomeOwnerScreen = () => {
     }
   };
 
+  const handleLocationSelect = (latitude:any, longitude:any) => {
+    setForm({...form, location:{type: 'Point', coordinates: [latitude, longitude]}});
+    setStep(3); // Go to next step after location selection
+  };
+
   const handleSubmit = () => {
-    if (validateImages()) {
-      Alert.alert('Success', 'Room listed successfully!');
-      console.log('Form Data:', form);
-    }
+    console.log(form);
+    // if (validateImages()) {
+    //   Alert.alert('Success', 'Room listed successfully!');
+    //   console.log('Form Data:', form);
+    // }
   };
 
   return (
@@ -119,6 +129,13 @@ const HomeOwnerScreen = () => {
           style={[styles.tab, step === 3 && styles.activeTab]}
           onPress={() => setStep(3)}>
           <Text style={[styles.tabText, step === 3 && styles.activeTabText]}>
+            Location
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, step === 4 && styles.activeTab]}
+          onPress={() => setStep(4)}>
+          <Text style={[styles.tabText, step === 4 && styles.activeTabText]}>
             Room Images
           </Text>
         </TouchableOpacity>
@@ -229,6 +246,26 @@ const HomeOwnerScreen = () => {
 
       {step === 3 && (
         <>
+          <Text style={styles.sectionTitle}>📍 Select Location</Text>
+          <LocationPicker onLocationSelect={handleLocationSelect} />
+
+          <View style={styles.navButtons}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => setStep(2)}>
+              <Text style={styles.backText}>⬅️ Back</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.nextButton}
+              onPress={() => setStep(4)}>
+              <Text style={styles.nextText}>Next ➡️</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
+
+      {step === 4 && (
+        <>
           <Text style={styles.sectionTitle}>🖼️ Room Images</Text>
           <View style={styles.imageContainer}>
             {form.room_image_url.map((img, index) => (
@@ -247,7 +284,7 @@ const HomeOwnerScreen = () => {
           <View style={styles.navButtons}>
             <TouchableOpacity
               style={styles.backButton}
-              onPress={() => setStep(2)}>
+              onPress={() => setStep(3)}>
               <Text style={styles.backText}>⬅️ Back</Text>
             </TouchableOpacity>
             <Button title="Submit" onPress={handleSubmit} color="#007BFF" />

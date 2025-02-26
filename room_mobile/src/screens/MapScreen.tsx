@@ -83,7 +83,7 @@ const MapScreen = () => {
         console.warn(err);
       }
     } else {
-      setPermissionGranted(true); // iOS handles permissions in Info.plist
+      setPermissionGranted(true);
     }
   };
 

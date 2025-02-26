@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {recommendData} from '../constants/TestData';
+import LocationPicker from '../components/maps/LocationPicker';
 
 const HomeScreen = ({navigation}) => {
   return (
@@ -40,7 +41,11 @@ const HomeScreen = ({navigation}) => {
         </View>
 
         {/* Featured Listings */}
-        <SectionTitle title="Featured Listings" />
+        <SectionTitle
+          title="Featured Listings"
+          name="Explore"
+          navigation={navigation}
+        />
         <FlatList
           data={recommendData}
           keyExtractor={item => item.id.toString()}
@@ -51,9 +56,12 @@ const HomeScreen = ({navigation}) => {
           )}
           ItemSeparatorComponent={() => <View style={{width: 15}} />}
         />
-
         {/* Near You Listings */}
-        <SectionTitle title="Near You" />
+        <SectionTitle
+          title="Near You"
+          navigation={navigation}
+          name="NearestMap"
+        />
         <FlatList
           data={recommendData}
           keyExtractor={item => item.id.toString()}
@@ -67,10 +75,10 @@ const HomeScreen = ({navigation}) => {
 };
 
 /** Section Header Component */
-const SectionTitle = ({title}) => (
+const SectionTitle = ({title, name, navigation}) => (
   <View style={styles.sectionHeader}>
     <Text style={styles.sectionTitle}>{title}</Text>
-    <TouchableOpacity>
+    <TouchableOpacity onPress={() => navigation.navigate(name)}>
       <Text style={styles.seeAllText}>See All</Text>
     </TouchableOpacity>
   </View>
@@ -169,6 +177,7 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     marginTop: 24,
+    marginBottom: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

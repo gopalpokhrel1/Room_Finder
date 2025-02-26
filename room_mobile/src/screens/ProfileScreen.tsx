@@ -65,34 +65,6 @@ const UserProfileScreen = () => {
             </View>
           </View>
         </View>
-
-        {/* Saved Listings Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Saved Listings</Text>
-          <View style={styles.savedItem}>
-            <Image
-              source={{
-                uri: 'https://images.pexels.com/photos/106400/pexels-photo-106400.jpeg',
-              }} // Saved Room 1
-              style={styles.savedImage}
-            />
-            <Text style={styles.savedText}>Beautiful Family Home</Text>
-          </View>
-          <View style={styles.savedItem}>
-            <Image
-              source={{
-                uri: 'https://images.pexels.com/photos/1643384/pexels-photo-1643384.jpeg',
-              }} // Saved Room 2
-              style={styles.savedImage}
-            />
-            <Text style={styles.savedText}>Luxury Villa with View</Text>
-          </View>
-        </View>
-
-        {/* Contact Support Section */}
-        <TouchableOpacity style={styles.contactSupportButton}>
-          <Text style={styles.contactSupportText}>Contact Support</Text>
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -182,32 +154,5 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#578FCA',
     marginTop: 4,
-  },
-  savedItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  savedImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
-    marginRight: 10,
-  },
-  savedText: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  contactSupportButton: {
-    margin: 16,
-    backgroundColor: '#578FCA',
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  contactSupportText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });

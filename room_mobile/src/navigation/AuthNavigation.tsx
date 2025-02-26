@@ -3,6 +3,7 @@ import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import TabNavigator from './TabNavigator';
 import DetailsScreen from '../screens/DetailsScreen';
+import NearestMapScreen from '../screens/NearestMapScreen';
 const Stack = createNativeStackNavigator();
 
 const AuthNavigation = () => {
@@ -26,6 +27,11 @@ const AuthNavigation = () => {
       <Stack.Screen
         name="Details"
         component={DetailsScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="NearestMap"
+        component={NearestMapScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

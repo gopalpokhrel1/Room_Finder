@@ -13,6 +13,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useNavigation} from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
+import LocationPicker from '../components/maps/LocationPicker';
 
 const RegisterScreen = () => {
   const [fullName, setFullName] = useState('');
@@ -67,7 +68,7 @@ const RegisterScreen = () => {
   const handleRegister = async () => {
     if (validateForm()) {
       const registrationData = {
-        full_name:fullName,
+        full_name: fullName,
         email,
         phone,
         password,
@@ -77,43 +78,49 @@ const RegisterScreen = () => {
         role,
         location,
       };
-     console.log(registrationData);
-    
+      console.log(registrationData);
 
-      try {
-        setLoading(true);
-        const response = await fetch(
-          'https://backend-roomfinder-api.onrender.com/users/signup',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(registrationData),
-          },
-        );
-        console.log(response);
-        const result = await response.json();
+      // try {
+      //   setLoading(true);
+      //   const response = await fetch(
+      //     'https://backend-roomfinder-api.onrender.com/users/signup',
+      //     {
+      //       method: 'POST',
+      //       headers: {
+      //         'Content-Type': 'application/json',
+      //       },
+      //       body: JSON.stringify(registrationData),
+      //     },
+      //   );
+      //   console.log(response);
+      //   const result = await response.json();
 
-        console.log(response);
+      //   console.log(response);
 
-        if (response.ok) {
-          Alert.alert('Success', 'Registration Successful!');
-          navigation.navigate('Login');
-        } else {
-          Alert.alert(
-            'Error',
-            result.message || 'Registration failed. Please try again.',
-          );
-        }
-      } catch (error) {
-        Alert.alert('Error', 'An error occurred. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
+      //   if (response.ok) {
+      //     Alert.alert('Success', 'Registration Successful!');
+      //     navigation.navigate('Login');
+      //   } else {
+      //     Alert.alert(
+      //       'Error',
+      //       result.message || 'Registration failed. Please try again.',
+      //     );
+      //   }
+      // } catch (error) {
+      //   Alert.alert('Error', 'An error occurred. Please try again later.');
+      // } finally {
+      //   setLoading(false);
+      // }
     } else {
       Alert.alert('Error', 'Please fill in all fields correctly');
     }
+  };
+
+  const handleLocationSelect = (latitude, longitude) => {
+    setLocation({
+      type: 'Point',
+      coordinates: [latitude, longitude],
+    });
   };
 
   return (
@@ -269,34 +276,28 @@ const RegisterScreen = () => {
 
           {/* Location (Latitude and Longitude) */}
           <Text style={styles.label}>Latitude and Longitude</Text>
+          <LocationPicker onLocationSelect={handleLocationSelect} />
+
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
               placeholder="Latitude"
               keyboardType="numeric"
               placeholderTextColor="#888"
-              value={location.coordinates[0].toString()}
-              onChangeText={text =>
-                setLocation({
-                  ...location,
-                  coordinates: [parseFloat(text), location.coordinates[1]],
-                })
-              }
+              value={location.coordinates[0]?.toString()}
+              editable={false} // Prevent manual editing
             />
+
             <TextInput
               style={styles.input}
               placeholder="Longitude"
               keyboardType="numeric"
               placeholderTextColor="#888"
-              value={location.coordinates[1].toString()}
-              onChangeText={text =>
-                setLocation({
-                  ...location,
-                  coordinates: [location.coordinates[0], parseFloat(text)],
-                })
-              }
+              value={location.coordinates[1]?.toString()}
+              editable={false} // Prevent manual editing
             />
           </View>
+
           {errors.location && (
             <Text style={styles.errorText}>{errors.location}</Text>
           )}
