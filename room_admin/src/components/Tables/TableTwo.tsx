@@ -1,43 +1,56 @@
-import { Product } from '../../types/product';
-import ProductOne from '../../images/product/product-01.png';
-import ProductTwo from '../../images/product/product-02.png';
-import ProductThree from '../../images/product/product-03.png';
-import ProductFour from '../../images/product/product-04.png';
 
-const productData: Product[] = [
+
+const personData = [
   {
-    image: ProductOne,
-    name: '',
-    category: 'Electronics',
-    price: 296,
-    sold: 22,
-    profit: 45,
+    image: 'https://plus.unsplash.com/premium_photo-1682089892133-556bde898f2c?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW5kaWFuJTIwYm95fGVufDB8fDB8fHww', // Replace with actual image URL
+    imageName: 'PersonOne.jpg',
+    name: 'John Doe',
+    gender: 'Male',
+    age: 28,
+    contact: '123-456-7890',
+    category: 'Software Engineer',
+    price: 75000, // Salary or earnings
+    sold: 0, // Not applicable, can be removed or replaced
+    profit: 0, // Not applicable, can be removed or replaced
   },
   {
-    image: ProductTwo,
-    name: 'Macbook Pro M1',
-    category: 'Electronics',
-    price: 546,
-    sold: 12,
-    profit: 125,
+    image: 'https://plus.unsplash.com/premium_photo-1682089892133-556bde898f2c?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW5kaWFuJTIwYm95fGVufDB8fDB8fHww',
+    imageName: 'PersonTwo.jpg',
+    name: 'Jane Smith',
+    gender: 'Female',
+    age: 32,
+    contact: '987-654-3210',
+    category: 'Doctor',
+    price: 95000,
+    sold: 0,
+    profit: 0,
   },
   {
-    image: ProductThree,
-    name: 'Dell Inspiron 15',
-    category: 'Electronics',
-    price: 443,
-    sold: 64,
-    profit: 247,
+    image: 'https://plus.unsplash.com/premium_photo-1682089892133-556bde898f2c?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW5kaWFuJTIwYm95fGVufDB8fDB8fHww',
+    imageName: 'PersonThree.jpg',
+    name: 'Michael Johnson',
+    gender: 'Male',
+    age: 40,
+    contact: '456-789-1234',
+    category: 'Entrepreneur',
+    price: 120000,
+    sold: 0,
+    profit: 0,
   },
   {
-    image: ProductFour,
-    name: 'HP Probook 450',
-    category: 'Electronics',
-    price: 499,
-    sold: 72,
-    profit: 103,
+    image: 'https://plus.unsplash.com/premium_photo-1682089892133-556bde898f2c?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW5kaWFuJTIwYm95fGVufDB8fDB8fHww',
+    imageName: 'PersonFour.jpg',
+    name: 'Emily Davis',
+    gender: 'Female',
+    age: 27,
+    contact: '321-654-9870',
+    category: 'Graphic Designer',
+    price: 68000,
+    sold: 0,
+    profit: 0,
   },
 ];
+
 
 const TableTwo = () => {
   return (
@@ -66,7 +79,7 @@ const TableTwo = () => {
         </div>
       </div>
 
-      {productData.map((product, key) => (
+      {personData.map((product, key) => (
         <div
           className="grid grid-cols-5 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-5 md:px-6 2xl:px-7.5"
           key={key}
@@ -86,14 +99,14 @@ const TableTwo = () => {
           </div>
           <div className="col-span-1 flex items-center">
             <p className="text-sm text-black dark:text-white">
-              ${product.price}
+              {product.gender}
             </p>
           </div>
           <div className="col-span-1 flex items-center">
-            <p className="text-sm text-black dark:text-white">{product.sold}</p>
+            <p className="text-sm text-black dark:text-white">{product.age}</p>
           </div>
           <div className="col-span-1 flex items-center">
-            <p className="text-sm text-meta-3">${product.profit}</p>
+            <p className="text-sm text-black">{product.contact}</p>
           </div>
         </div>
       ))}

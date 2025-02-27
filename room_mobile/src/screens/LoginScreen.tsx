@@ -21,6 +21,7 @@ const LoginPage = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [passwordVisible, setPasswordVisible] = useState(false);
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -31,37 +32,41 @@ const LoginPage = () => {
   };
 
   const handleLogin = async () => {
-    // if (validateForm()) {
-    //   try {
-    //     const response = await fetch("https://backend-roomfinder-api.onrender.com/users/login", {
-    //       method: "POST",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //       body: JSON.stringify({
-    //         phone,
-    //         password,
-    //       }),
-    //     });
+    if (validateForm()) {
+      try {
+        setLoading(true)
+        const response = await fetch("https://backend-roomfinder-api.onrender.com/users/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            phone,
+            password,
+          }),
+        });
   
-    //     const data = await response.json();
-    //     console.log(data);
+        const data = await response.json();
   
-    //     if (response.ok) {
-    //       AsyncStorage.setItem("role", data.user.role);  // If you still need role in AsyncStorage, keep it
+        if (response.ok) {
+          AsyncStorage.setItem("user", JSON.stringify(data));
+          navigation.navigate("Main")
           
-    //     } else {
-    //       Alert.alert('Error', data.message || 'Invalid credentials');
-    //     }
-    //   } catch (error) {
-    //     console.error(error);
-    //     Alert.alert('Error', 'Something went wrong. Please try again.');
-    //   }
-    // } else {
-    //   Alert.alert('Error', 'Please fill all fields correctly.');
-    // }
+        } else {
+          Alert.alert('Error', data.message || 'Invalid credentials');
+        }
+      } catch (error) {
+        console.error(error);
+        Alert.alert('Error', 'Something went wrong. Please try again.');
+      }
+      finally{
+        setLoading(false);
+      }
+    } else {
+      Alert.alert('Error', 'Please fill all fields correctly.');
+    }
 
-    navigation.navigate('Main');
+
   };
 
   const handleRegister = () => {
@@ -116,7 +121,7 @@ const LoginPage = () => {
           </View>
           {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
-          <View style={styles.rememberForgotContainer}>
+          {/* <View style={styles.rememberForgotContainer}>
             <View style={styles.rememberMeContainer}>
               <CheckBox
                 value={rememberMe}
@@ -128,10 +133,10 @@ const LoginPage = () => {
             <TouchableOpacity onPress={handleForgotPassword}>
               <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
 
           <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-            <Text style={styles.loginButtonText}>Login</Text>
+            <Text style={styles.loginButtonText}>{loading ? "Logging....": "Log in"}</Text>
           </TouchableOpacity>
 
           <View style={styles.registerContainer}>

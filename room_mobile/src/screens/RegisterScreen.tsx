@@ -31,6 +31,7 @@ const RegisterScreen = () => {
   });
   const [errors, setErrors] = useState({});
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showMap, setShowMap] = useState(false);
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
 
@@ -80,37 +81,37 @@ const RegisterScreen = () => {
       };
       console.log(registrationData);
 
-      // try {
-      //   setLoading(true);
-      //   const response = await fetch(
-      //     'https://backend-roomfinder-api.onrender.com/users/signup',
-      //     {
-      //       method: 'POST',
-      //       headers: {
-      //         'Content-Type': 'application/json',
-      //       },
-      //       body: JSON.stringify(registrationData),
-      //     },
-      //   );
-      //   console.log(response);
-      //   const result = await response.json();
+      try {
+        setLoading(true);
+        const response = await fetch(
+          'https://backend-roomfinder-api.onrender.com/users/signup',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(registrationData),
+          },
+        );
+        console.log(response);
+        const result = await response.json();
 
-      //   console.log(response);
+        console.log(response);
 
-      //   if (response.ok) {
-      //     Alert.alert('Success', 'Registration Successful!');
-      //     navigation.navigate('Login');
-      //   } else {
-      //     Alert.alert(
-      //       'Error',
-      //       result.message || 'Registration failed. Please try again.',
-      //     );
-      //   }
-      // } catch (error) {
-      //   Alert.alert('Error', 'An error occurred. Please try again later.');
-      // } finally {
-      //   setLoading(false);
-      // }
+        if (response.ok) {
+          Alert.alert('Success', 'Registration Successful!');
+          navigation.navigate('Login');
+        } else {
+          Alert.alert(
+            'Error',
+            result.message || 'Registration failed. Please try again.',
+          );
+        }
+      } catch (error) {
+        Alert.alert('Error', 'An error occurred. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
     } else {
       Alert.alert('Error', 'Please fill in all fields correctly');
     }
@@ -125,7 +126,11 @@ const RegisterScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+    {
+      showMap ? (
+        <LocationPicker setShowMap={setShowMap} onLocationSelect={handleLocationSelect}/>
+      ):(
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.header}>
           <Text style={styles.title}>Create Account</Text>
           <Text style={styles.subtitle}>
@@ -275,17 +280,22 @@ const RegisterScreen = () => {
           {errors.role && <Text style={styles.errorText}>{errors.role}</Text>}
 
           {/* Location (Latitude and Longitude) */}
-          <Text style={styles.label}>Latitude and Longitude</Text>
-          <LocationPicker onLocationSelect={handleLocationSelect} />
+          <Text style={styles.label}>Location</Text>
+          <TouchableOpacity style={styles.showMapButton} onPress={()=> setShowMap(true)}>
+            <Text style={styles.showMapText}>
+              Pick location 🗺️
+            </Text>
+          </TouchableOpacity>
 
-          <View style={styles.inputContainer}>
+          
+          {/* <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
               placeholder="Latitude"
               keyboardType="numeric"
               placeholderTextColor="#888"
               value={location.coordinates[0]?.toString()}
-              editable={false} // Prevent manual editing
+              editable={false} 
             />
 
             <TextInput
@@ -294,9 +304,9 @@ const RegisterScreen = () => {
               keyboardType="numeric"
               placeholderTextColor="#888"
               value={location.coordinates[1]?.toString()}
-              editable={false} // Prevent manual editing
+              editable={false} 
             />
-          </View>
+          </View> */}
 
           {errors.location && (
             <Text style={styles.errorText}>{errors.location}</Text>
@@ -306,10 +316,17 @@ const RegisterScreen = () => {
           <TouchableOpacity
             style={styles.registerButton}
             onPress={handleRegister}>
-            <Text style={styles.registerButtonText}>Register</Text>
+            <Text style={styles.registerButtonText}>{loading? "waiting..": "Register"}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.LoginButton}
+            onPress={()=> navigation.navigate("Login")}>
+            <Text style={styles.LoginButtonText}>Already have account</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
+      )
+    }
 
       {/* Date Picker */}
       {showDatePicker && (
@@ -330,14 +347,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    
   },
   scrollContainer: {
     flexGrow: 1,
+    paddingVertical:18,
     justifyContent: 'center',
   },
   header: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 20,
   },
   title: {
     fontSize: 28,
@@ -354,23 +373,24 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
+    marginTop:12,
     fontWeight: '600',
     color: '#333',
-    marginBottom: 8,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    marginBottom: 20,
-    paddingBottom: 5,
+    // paddingBottom: 5,
+
+   
   },
   input: {
     flex: 1,
     height: 40,
-    fontSize: 16,
-    paddingLeft: 10,
+    fontSize: 14,
+
     color: '#333',
   },
   icon: {
@@ -379,7 +399,7 @@ const styles = StyleSheet.create({
   pickerContainer: {
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    marginBottom: 20,
+    marginBottom:4,
   },
   picker: {
     height: 50,
@@ -389,11 +409,10 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     fontSize: 14,
-    marginBottom: 10,
   },
   registerButton: {
     backgroundColor: '#578FCA',
-    paddingVertical: 15,
+    paddingVertical: 8,
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 20,
@@ -403,4 +422,24 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  LoginButton:{
+     marginVertical:4,
+  },
+showMapButton:{
+
+},
+showMapText:{
+  fontSize: 16,
+  fontWeight: 600,
+  color: "white",
+  backgroundColor: "#4CAF50",
+  padding: 10,
+  borderRadius: 8,
+},
+  LoginButtonText:{
+    color:"#578FCA",
+    fontSize:16,
+    textAlign:"center",
+    textDecorationLine:"underline"
+  }
 });

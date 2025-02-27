@@ -2,16 +2,17 @@ import {useState, useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import ExploreScreen from '../screens/ExploreScreen';
-import BookMarkScreen from '../screens/BookMarkScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {View, TouchableOpacity, StyleSheet} from 'react-native';
-import MapScreen from '../screens/MapScreen';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import HomeOwnerScreen from '../screens/HomeOwnerScreen';
-import UserPreferencesScreen from '../screens/UserPreferencesScreen';
-import HomeOwnerListScreen from '../screens/HomeOwnerListScreen';
-import PaymentScreen from '../screens/PaymentScreen';
+import OwnerScreen from '../screens/OwnerScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -25,27 +26,40 @@ const CustomTabBarButton = ({children, onPress}) => (
 );
 
 const TabNavigator = () => {
-  const [role, setRole] = useState(null);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // ✅ Add Loading State
 
   useEffect(() => {
-    const fetchRole = async () => {
+    const fetchUser = async () => {
       try {
-        const storedRole = await AsyncStorage.getItem('role');
-        setRole('homeOwner');
+        const userString = await AsyncStorage.getItem('user');
+        const storedUser = userString ? JSON.parse(userString) : null;
+        setUser(storedUser);
       } catch (error) {
-        console.error('Error fetching role:', error);
+        console.error('Error fetching user:', error);
+      } finally {
+        setLoading(false); // ✅ Stop loading once the data is fetched
       }
     };
 
-    fetchRole();
+    fetchUser();
   }, []);
+
+  if (loading) {
+    return (
+      // ✅ Show loading indicator until user is fetched
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#578FCA" />
+      </View>
+    );
+  }
 
   return (
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: {
           backgroundColor: '#ffffff',
-          height: 45,
+          height: 50,
           position: 'absolute',
           shadowColor: '#000',
           shadowOpacity: 0.1,
@@ -56,39 +70,45 @@ const TabNavigator = () => {
         tabBarActiveTintColor: '#578FCA',
         tabBarInactiveTintColor: 'gray',
       }}>
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({color}) => <Icon name="home" size={30} color={color} />,
-        }}
-      />
-      <Tab.Screen
-        name="Explore"
-        component={ExploreScreen}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({color}) => (
-            <Icon name="search" size={30} color={color} />
-          ),
-        }}
-      />
-
-      {role === 'user' && (
+      {user?.user.role === 'homeOwner' && (
         <Tab.Screen
-          name="UserPreference"
-          component={UserPreferencesScreen}
+          name="Home"
+          component={OwnerScreen}
           options={{
             headerShown: false,
             tabBarIcon: ({color}) => (
-              <Icon name="edit" size={30} color={color} />
+              <Icon name="home" size={30} color={color} />
             ),
           }}
         />
       )}
 
-      {role === 'homeOwner' && (
+      {user?.user.role === 'renter' && (
+        <>
+          <Tab.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{
+              headerShown: false,
+              tabBarIcon: ({color}) => (
+                <Icon name="home" size={30} color={color} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Explore"
+            component={ExploreScreen}
+            options={{
+              headerShown: false,
+              tabBarIcon: ({color}) => (
+                <Icon name="search" size={30} color={color} />
+              ),
+            }}
+          />
+        </>
+      )}
+
+      {user?.user.role === 'homeOwner' && (
         <Tab.Screen
           name="Add"
           component={HomeOwnerScreen}
@@ -98,20 +118,6 @@ const TabNavigator = () => {
               <CustomTabBarButton {...props}>
                 <Icon name="add" size={30} color="#ffffff" />
               </CustomTabBarButton>
-            ),
-          }}
-        />
-      )}
-        {role === 'homeOwner' && (
-        <Tab.Screen
-          name="List"
-          component={HomeOwnerListScreen}
-          options={{
-            headerShown: false,
-            tabBarIcon: ({color}) => (
-             
-                <Icon name="local-activity" size={30} color={color}/>
-           
             ),
           }}
         />
@@ -127,24 +133,6 @@ const TabNavigator = () => {
           ),
         }}
       />
-      <Tab.Screen
-        name="Payment"
-        component={PaymentScreen}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({color}) => (
-            <Icon name="person" size={30} color={color} />
-          ),
-        }}
-      />
-      {/* <Tab.Screen
-        name="Maps"
-        component={MapScreen}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({color}) => <Icon name="map" size={30} color={color} />,
-        }}
-      /> */}
     </Tab.Navigator>
   );
 };
@@ -165,6 +153,13 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.3,
     shadowOffset: {width: 0, height: 5},
+  },
+  loadingContainer: {
+    // ✅ Style for Loading Indicator
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
   },
 });
 

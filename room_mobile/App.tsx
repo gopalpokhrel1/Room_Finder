@@ -1,12 +1,15 @@
-import {StyleSheet} from 'react-native';
+import {StatusBar, StyleSheet} from 'react-native';
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import AuthNavigation from './src/navigation/AuthNavigation';
 const App = () => {
   return (
-    <NavigationContainer>
-      <AuthNavigation />
-    </NavigationContainer>
+    <>
+      <StatusBar barStyle="dark-content" />
+      <NavigationContainer>
+        <AuthNavigation />
+      </NavigationContainer>
+    </>
   );
 };
 

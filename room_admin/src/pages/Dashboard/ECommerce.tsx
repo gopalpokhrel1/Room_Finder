@@ -19,10 +19,6 @@ const ECommerce: React.FC = () => {
         <CardDataStats title="Total Users" total="4" >
       <FiUsers size={20} color='blue'/>
         </CardDataStats>
-        <CardDataStats title="Total Houses" total="2">
-        <IoHomeOutline size={20} color='blue'/>
-
-        </CardDataStats>
         <CardDataStats title="Total Flats" total="3">
         <BiBuildings size={20} color='blue'/>
 
@@ -32,13 +28,13 @@ const ECommerce: React.FC = () => {
         </CardDataStats>
       </div>
 
-      <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
+      {/* <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
       
         <div className="col-span-12 xl:col-span-8">
           <TableOne />
         </div>
         <ChatCard />
-      </div>
+      </div> */}
     </>
   );
 };

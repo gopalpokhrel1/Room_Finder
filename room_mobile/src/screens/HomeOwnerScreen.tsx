@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -13,24 +13,48 @@ import {
 } from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import LocationPicker from '../components/maps/LocationPicker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Picker} from '@react-native-picker/picker';
 
 const HomeOwnerScreen = () => {
   const [step, setStep] = useState(1);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [images, setImages] = React.useState([]);
+
+
+  const getUser = async () => {
+    try {
+      const userString = await AsyncStorage.getItem('user');
+      const user = userString ? JSON.parse(userString) : null;
+      return user;
+    } catch (error) {}
+  };
+  useEffect(() => {
+    const fetchUser = async () => {
+      const storedUser = await getUser();
+      setUser(storedUser);
+    };
+
+    fetchUser();
+  }, []);
   const [form, setForm] = useState({
     title: '',
     description: '',
     price: '',
     address: '',
     areaSize: '',
-    availableFrom: '',
-    room_status: 'available',
+    no_of_room: 1,
+    room_type: '',
+    room_status: 'pending',
     facilities: {
       wifi: false,
       parking: false,
-      airConditioning: false,
-      gym: false,
+      disposal_charge: false,
+      electricity: false,
+      water: false,
     },
-    room_image_url: [],
+    files: [],
     location: {
       type: 'Point',
       coordinates: [27.716842, 85.321386],
@@ -48,16 +72,14 @@ const HomeOwnerScreen = () => {
       newErrors.price = 'Valid price is required';
     if (!form.address.trim()) newErrors.address = 'Address is required';
     if (!form.areaSize.trim()) newErrors.areaSize = 'Area size is required';
-    if (!form.availableFrom.trim())
-      newErrors.availableFrom = 'Available from date is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const validateImages = () => {
     let newErrors = {};
-    if (form.room_image_url.length === 0)
-      newErrors.room_image_url = 'At least one image is required';
+    if (form.files.length === 0)
+      newErrors.files = 'At least one image is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -73,19 +95,22 @@ const HomeOwnerScreen = () => {
     });
   };
 
+
   const handleImageSelect = () => {
-    if (form.room_image_url.length < 5) {
+    if (form.files.length < 5) {
       launchImageLibrary(
         {
           mediaType: 'photo',
           includeBase64: false,
         },
         response => {
+          console.log(response)
           if (response.assets) {
+            
             const newImage = response.assets[0].uri;
             setForm({
               ...form,
-              room_image_url: [...form.room_image_url, newImage],
+              files: [...form.files, newImage],
             });
           }
         },
@@ -95,17 +120,84 @@ const HomeOwnerScreen = () => {
     }
   };
 
-  const handleLocationSelect = (latitude:any, longitude:any) => {
-    setForm({...form, location:{type: 'Point', coordinates: [latitude, longitude]}});
-    setStep(3); // Go to next step after location selection
+  const handleLocationSelect = (latitude: any, longitude: any) => {
+    setForm({
+      ...form,
+      location: {type: 'Point', coordinates: [latitude, longitude]},
+    });
+    setStep(3);
   };
 
-  const handleSubmit = () => {
-    console.log(form);
-    // if (validateImages()) {
-    //   Alert.alert('Success', 'Room listed successfully!');
-    //   console.log('Form Data:', form);
-    // }
+  const handleSubmit = async () => {
+    if (!user) {
+      Alert.alert('Error', 'User not found. Please login again.');
+      return;
+    }
+
+    const accessToken = user?.accessToken;
+
+    const formData = new FormData();
+    formData.append('title', form.title);
+    formData.append('description', form.description);
+    formData.append('room_type', form.room_type);
+    formData.append('price', form.price);
+    formData.append('latitude', form.location.coordinates[0]);
+    formData.append('longitude', form.location.coordinates[1]);
+    formData.append('address', form.address);
+    formData.append('areaSize', form.areaSize);
+    formData.append('room_status', 'available');
+    formData.append('no_of_room', form.no_of_room);
+
+
+    // Append files to FormData
+    if (form.files.length > 0) {
+      form.files.forEach((fileUri, index) => {
+        formData.append('files', {
+          uri:fileUri,
+          name:`photo${index}.jpg`,
+          type: 'image/jpg',
+        }
+        );
+      });
+    } else {
+    }
+
+    // Append facility boolean values
+    Object.keys(form.facilities).forEach(key => {
+      formData.append(key, form.facilities[key]);
+    });
+
+
+    try {
+      setLoading(true);
+
+      const response = await fetch(
+        'https://backend-roomfinder-api.onrender.com/rooms/createroom',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: formData, 
+        },
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Success', 'Room listed successfully!');
+        console.log('API Response:', data);
+      } else {
+        Alert.alert('Error', data.message || 'Something went wrong');
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+      Alert.alert('Error', 'Failed to list the room. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -144,6 +236,7 @@ const HomeOwnerScreen = () => {
       {step === 1 && (
         <>
           <Text style={styles.sectionTitle}>🏡 Basic Info</Text>
+
           <Text style={styles.label}>Title</Text>
           <TextInput
             style={styles.input}
@@ -195,16 +288,38 @@ const HomeOwnerScreen = () => {
             <Text style={styles.error}>{errors.areaSize}</Text>
           )}
 
-          <Text style={styles.label}>Available From</Text>
-          <TextInput
+          {/* Room Type Dropdown */}
+          <Text style={styles.label}>Room Type</Text>
+          <Picker
+            selectedValue={form.room_type}
             style={styles.input}
-            placeholder="Enter available from date"
-            value={form.availableFrom}
-            onChangeText={text => handleChange('availableFrom', text)}
-          />
-          {errors.availableFrom && (
-            <Text style={styles.error}>{errors.availableFrom}</Text>
+            onValueChange={value => handleChange('room_type', value)}>
+            <Picker.Item label="Select Room Type" value="" />
+            <Picker.Item label="Room" value="room" />
+            <Picker.Item label="Flat" value="flat" />
+          </Picker>
+          {errors.room_type && (
+            <Text style={styles.error}>{errors.room_type}</Text>
           )}
+          {errors.room_type && (
+            <Text style={styles.error}>{errors.room_type}</Text>
+          )}
+
+          {/* Number of Rooms (Only visible if "Flat" is selected) */}
+
+          <>
+            <Text style={styles.label}>Number of Rooms</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter number of rooms"
+              keyboardType="numeric"
+              value={form.no_of_room.toString()}
+              onChangeText={text => handleChange('no_of_room', Number(text))}
+            />
+            {errors.no_of_room && (
+              <Text style={styles.error}>{errors.no_of_room}</Text>
+            )}
+          </>
 
           <TouchableOpacity
             style={styles.nextButton}
@@ -268,7 +383,7 @@ const HomeOwnerScreen = () => {
         <>
           <Text style={styles.sectionTitle}>🖼️ Room Images</Text>
           <View style={styles.imageContainer}>
-            {form.room_image_url.map((img, index) => (
+            {form.files.map((img, index) => (
               <Image key={index} source={{uri: img}} style={styles.image} />
             ))}
           </View>
@@ -277,9 +392,7 @@ const HomeOwnerScreen = () => {
             onPress={handleImageSelect}>
             <Text style={styles.uploadText}>+ Upload Image</Text>
           </TouchableOpacity>
-          {errors.room_image_url && (
-            <Text style={styles.error}>{errors.room_image_url}</Text>
-          )}
+          {errors.files && <Text style={styles.error}>{errors.files}</Text>}
 
           <View style={styles.navButtons}>
             <TouchableOpacity
@@ -287,7 +400,11 @@ const HomeOwnerScreen = () => {
               onPress={() => setStep(3)}>
               <Text style={styles.backText}>⬅️ Back</Text>
             </TouchableOpacity>
-            <Button title="Submit" onPress={handleSubmit} color="#007BFF" />
+            <Button
+              title={loading ? 'submitting..' : 'Submit'}
+              onPress={handleSubmit}
+              color="#007BFF"
+            />
           </View>
         </>
       )}
@@ -296,7 +413,7 @@ const HomeOwnerScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {padding: 16, backgroundColor: '#F8F9FA', flex: 1},
+  container: {paddingHorizontal: 16,paddingVertical:48, backgroundColor: '#F8F9FA', flex: 1},
   tabContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',

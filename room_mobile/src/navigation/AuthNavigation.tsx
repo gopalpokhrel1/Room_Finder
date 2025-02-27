@@ -4,6 +4,8 @@ import RegisterScreen from '../screens/RegisterScreen';
 import TabNavigator from './TabNavigator';
 import DetailsScreen from '../screens/DetailsScreen';
 import NearestMapScreen from '../screens/NearestMapScreen';
+import OwnerDetailsScreen from '../screens/OwnerDetailsScreen';
+import SearchScreen from '../screens/SearchScreen';
 const Stack = createNativeStackNavigator();
 
 const AuthNavigation = () => {
@@ -32,6 +34,16 @@ const AuthNavigation = () => {
       <Stack.Screen
         name="NearestMap"
         component={NearestMapScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="OwnerDetails"
+        component={OwnerDetailsScreen}
+        options={{headerShown: false}}
+      />
+       <Stack.Screen
+        name="Search"
+        component={SearchScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

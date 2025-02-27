@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {View, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 
-const LocationPicker = ({onLocationSelect}: any) => {
+const LocationPicker = ({onLocationSelect, setShowMap}: any) => {
   const [location, setLocation] = useState({
     latitude: 27.670593,
     longitude: 85.421726,
@@ -18,6 +18,7 @@ const LocationPicker = ({onLocationSelect}: any) => {
   const handleConfirm = () => {
     if (onLocationSelect) {
       onLocationSelect(location.latitude, location.longitude);
+      setShowMap(false)
     }
   };
 
@@ -53,17 +54,17 @@ const styles = StyleSheet.create({
   },
   button: {
     position: 'absolute',
-    bottom: 30,
-    left: '20%',
-    right: '20%',
+    bottom: 10,
+    right: '2%',
     backgroundColor: '#0077b6',
-    padding: 15,
+    paddingHorizontal: 16,
+    paddingVertical:8,
     borderRadius: 10,
     alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: '600',
   },
 });

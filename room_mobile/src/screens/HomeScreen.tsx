@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   FlatList,
   Image,
@@ -11,10 +11,124 @@ import {
   View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {recommendData} from '../constants/TestData';
-import LocationPicker from '../components/maps/LocationPicker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import UserPreferences from '../components/userPreferences/UserPrefernces';
 
 const HomeScreen = ({navigation}) => {
+  const [user, setUser] = useState(null);
+  const [firstLogin, setFirstLogin] = useState<boolean | null>(null);
+
+  const [featuredData, setFeaturedData] = useState([]);
+  const [nearBy, setNearBy] = useState([]);
+
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      if (!user || !user.accessToken || !firstLogin) {
+        console.log("User not available or not first login, skipping fetch");
+        return;
+      }
+  
+      try {
+        const response = await fetch(
+          'https://backend-roomfinder-api.onrender.com/recommend/rooms',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${user.accessToken}`,
+            },
+          }
+        );
+
+        
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+  
+        const data = await response.json();
+        setFeaturedData(data); 
+      } catch (error) {
+        console.error("Error fetching recommended rooms:", error);
+      }
+    };
+  
+    if (user && firstLogin) {
+      fetchRecommendations();
+    }
+  }, [user, firstLogin]);
+
+  useEffect(()=>{
+    AsyncStorage.removeItem("fistLogin");
+  }, [])
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userString = await AsyncStorage.getItem('user');
+        const storedUser = userString ? JSON.parse(userString) : null;
+        setUser(storedUser);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+
+    const checkFirstLogin = async () => {
+      try {
+        const value = await AsyncStorage.getItem('firstLogin');
+        setFirstLogin(value !== null);
+      } catch (error) {
+        console.error('Error checking first login:', error);
+      }
+    };
+
+    fetchUser();
+    checkFirstLogin();
+  }, []);
+
+  useEffect(() => {
+    const fetchNear = async () => {
+      if (!user || !user.accessToken) {
+        console.log('User or token not available, skipping fetch');
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          'https://backend-roomfinder-api.onrender.com/rooms/nearby/1000',
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${user.accessToken}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setNearBy(data.rooms); // Save the data in state
+        console.log('Nearby rooms:', data);
+      } catch (error) {
+        console.error('Error fetching nearby rooms:', error);
+      }
+    };
+
+    if (user) {
+      fetchNear();
+    }
+  }, [user]); // Runs when user changes
+
+  if (firstLogin === null || user === null) {
+    return null;
+  }
+
+  if (!firstLogin && user?.user?.role !== "homeOwner") {
+    return <UserPreferences />;
+  }
+
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -30,25 +144,22 @@ const HomeScreen = ({navigation}) => {
         {/* Search Bar */}
         <View style={styles.searchContainer}>
           <Pressable
-            onPress={() => navigation.navigate('Explore')}
+            onPress={() => navigation.navigate('Search')}
             style={styles.searchBox}>
             <Icon name="search" size={22} color="gray" />
             <Text style={styles.searchPlaceholder}>Search listings...</Text>
           </Pressable>
-          <TouchableOpacity style={styles.filterBox}>
-            <Icon name="tune" size={24} color="white" />
-          </TouchableOpacity>
         </View>
 
         {/* Featured Listings */}
         <SectionTitle
-          title="Featured Listings"
+          title="Recommendation"
           name="Explore"
           navigation={navigation}
         />
         <FlatList
-          data={recommendData}
-          keyExtractor={item => item.id.toString()}
+          data={featuredData}
+          keyExtractor={item => item.room_id.toString()}
           horizontal
           showsHorizontalScrollIndicator={false}
           renderItem={({item}) => (
@@ -63,10 +174,10 @@ const HomeScreen = ({navigation}) => {
           name="NearestMap"
         />
         <FlatList
-          data={recommendData}
-          keyExtractor={item => item.id.toString()}
+          data={nearBy}
+          keyExtractor={item => item.r_id.toString()}
           showsVerticalScrollIndicator={false}
-          renderItem={({item}) => <NearYouCard item={item} />}
+          renderItem={({item}) => <NearYouCard  item={item} navigation={navigation}/>}
           ItemSeparatorComponent={() => <View style={{height: 10}} />}
         />
       </ScrollView>
@@ -78,26 +189,30 @@ const HomeScreen = ({navigation}) => {
 const SectionTitle = ({title, name, navigation}) => (
   <View style={styles.sectionHeader}>
     <Text style={styles.sectionTitle}>{title}</Text>
-    <TouchableOpacity onPress={() => navigation.navigate(name)}>
+    {
+      title !== "Recommendation" &&(
+        <TouchableOpacity onPress={() => navigation.navigate(name)}>
       <Text style={styles.seeAllText}>See All</Text>
     </TouchableOpacity>
+      )
+    }
   </View>
 );
 
 /** Featured Listing Card */
 const FeaturedCard = ({item, navigation}) => (
   <TouchableOpacity
-    onPress={() => navigation.navigate('Details', {id: item.id})}
+    onPress={() => navigation.navigate('Details', {id: item.room_id})}
     style={styles.featuredCard}>
-    <Image source={{uri: item.photo}} style={styles.featuredImage} />
+    <Image source={{uri: item.room_details.room_image_url[0]}} style={styles.featuredImage} />
     <View style={styles.featuredDetails}>
-      <Text style={styles.featuredTitle}>{item.name}</Text>
-      <Text style={styles.featuredPrice}>Rs. {item.price}/month</Text>
+      <Text style={styles.featuredTitle}>{item.room_details.name}</Text>
+      <Text style={styles.featuredPrice}>Rs. {item.room_details.price}/month</Text>
       <View style={styles.iconRow}>
         <Icon name="location-on" size={16} color="gray" />
-        <Text style={styles.featuredLocation}>{item.location}</Text>
+        <Text style={styles.featuredLocation}>{item.room_details.address}</Text>
       </View>
-      <View style={styles.iconRow}>
+      {/* <View style={styles.iconRow}>
         <Icon name="bed" size={16} color="gray" />
         <Text style={styles.featuredInfo}>{item.available_rooms} Beds</Text>
         <Icon
@@ -107,24 +222,27 @@ const FeaturedCard = ({item, navigation}) => (
           style={{marginLeft: 10}}
         />
         <Text style={styles.featuredInfo}>{item.area}</Text>
-      </View>
+      </View> */}
     </View>
   </TouchableOpacity>
 );
 
 /** Near You Listing Card */
-const NearYouCard = ({item}) => (
-  <View style={styles.nearCard}>
-    <Image source={{uri: item.photo}} style={styles.nearImage} />
+const NearYouCard = ({item,navigation}) => (
+  
+  <TouchableOpacity
+  onPress={() => navigation.navigate('Details', {id:item.r_id})}
+  style={styles.nearCard}>
+    <Image source={{uri: item.room_image_url[0]}} style={styles.nearImage} />
     <View style={styles.nearDetails}>
-      <Text style={styles.nearTitle}>{item.name}</Text>
+      <Text style={styles.nearTitle}>{item.title}</Text>
       <Text style={styles.nearPrice}>Rs. {item.price}/month</Text>
       <View style={styles.iconRow}>
         <Icon name="location-on" size={16} color="gray" />
-        <Text style={styles.nearLocation}>{item.location}</Text>
+        <Text style={styles.nearLocation}>{item.address}</Text>
       </View>
     </View>
-  </View>
+  </TouchableOpacity>
 );
 
 export default HomeScreen;
