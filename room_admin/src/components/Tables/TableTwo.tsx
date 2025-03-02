@@ -1,31 +1,39 @@
 import { useEffect, useState } from "react";
-
-
-
+import { Edit, Trash2 } from "lucide-react";
 
 const TableTwo = () => {
-
   const [user, setUser] = useState([]);
 
-  useEffect(()=>{
-    const fetchUsers = async ()=>{
-      try{
-        const res = await fetch("https://backend-roomfinder-api.onrender.com/admin/getallusers", {
-          method:"GET",
-          headers:{
-            Authorization :`Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk5YThhYjAxLWRmZGMtNDE4OS04MDFiLWYzMGVmOWEyNDNhMiIsImVtYWlsIjoiZGluZXNoQGdtYWlsLmNvbSIsInBob25lIjoiOTYzMDI1ODc0MSIsImlhdCI6MTc0MDg5MDcyMSwiZXhwIjoxNzQwOTc3MTIxfQ.YFyo7C4XYlB9k5EfuuebGDFjy_8ExWAS0W3OgXTpvx8`
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch(
+          "https://backend-roomfinder-api.onrender.com/admin/getallusers",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk5YThhYjAxLWRmZGMtNDE4OS04MDFiLWYzMGVmOWEyNDNhMiIsImVtYWlsIjoiZGluZXNoQGdtYWlsLmNvbSIsInBob25lIjoiOTYzMDI1ODc0MSIsImlhdCI6MTc0MDg5MDcyMSwiZXhwIjoxNzQwOTc3MTIxfQ.YFyo7C4XYlB9k5EfuuebGDFjy_8ExWAS0W3OgXTpvx8`,
+            },
           }
-        })
+        );
 
         const data = await res.json();
         console.log(data);
-       setUser(data.data);
+        setUser(data.data);
+      } catch {
+      } finally {
       }
-      catch{}
-      finally{}
-    }
-    fetchUsers()
-  }, [])
+    };
+    fetchUsers();
+  }, []);
+
+  const handleEdit = (id: string) => {
+    console.log(`Edit owner with ID: ${id}`);
+  };
+
+  const handleDelete = (id: string) => {
+    console.log(`Delete owner with ID: ${id}`);
+  };
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="py-6 px-4 md:px-6 xl:px-7.5">
@@ -46,6 +54,9 @@ const TableTwo = () => {
         </div>
         <div className="col-span-1 flex items-center">
           <p className="font-medium">Contact</p>
+        </div>
+        <div className="col-span-1 flex items-center">
+          <p className="font-medium">Action</p>
         </div>
       </div>
 
@@ -69,6 +80,20 @@ const TableTwo = () => {
           </div>
           <div className="col-span-1 flex items-center">
             <p className="text-sm text-black">{product.phone}</p>
+          </div>
+          <div className="col-span-1 flex items-center space-x-4">
+            <button
+              onClick={() => handleEdit(product.id)}
+              className="text-blue-500 hover:text-blue-700"
+            >
+              <Edit size={20} />
+            </button>
+            <button
+              onClick={() => handleDelete(product.id)}
+              className="text-red-500 hover:text-red-700"
+            >
+              <Trash2 size={20} />
+            </button>
           </div>
         </div>
       ))}
