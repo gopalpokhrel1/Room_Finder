@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Sample data for house details
 const houseData = [
@@ -40,6 +40,25 @@ export default function Room() {
     setDeclineMessage('');
     setCurrentHouse(null);
   };
+
+    useEffect(()=>{
+        const fetchFlats = async ()=>{
+          try{
+            const res = await fetch("https://backend-roomfinder-api.onrender.com/admin/filter-rooms", {
+              method:"GET",
+              headers:{
+                Authorization :`Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk5YThhYjAxLWRmZGMtNDE4OS04MDFiLWYzMGVmOWEyNDNhMiIsImVtYWlsIjoiZGluZXNoQGdtYWlsLmNvbSIsInBob25lIjoiOTYzMDI1ODc0MSIsImlhdCI6MTc0MDg5MDcyMSwiZXhwIjoxNzQwOTc3MTIxfQ.YFyo7C4XYlB9k5EfuuebGDFjy_8ExWAS0W3OgXTpvx8`
+              }
+            })
+    
+            const data = await res.json();
+            console.log(data);
+          }
+          catch{}
+          finally{}
+        }
+        fetchFlats();
+      }, [])
 
   const handleDeclineSubmit = () => {
     console.log('Decline message:', declineMessage);

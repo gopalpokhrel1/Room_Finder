@@ -38,7 +38,7 @@ const NearestMapScreen = ({navigation}) => {
 
       try {
         const response = await fetch(
-          'https://backend-roomfinder-api.onrender.com/rooms/nearby/1000',
+          'https://backend-roomfinder-api.onrender.com/rooms/nearby/2',
           {
             method: 'GET',
             headers: {
@@ -64,19 +64,28 @@ const NearestMapScreen = ({navigation}) => {
     }
   }, [user]);
 
-  console.log(nearBy);
 
+console.log(user);
   return (
     <View style={styles.container}>
       {/* Map View */}
       <MapView
         style={styles.map}
         initialRegion={{
-          latitude: 27.670367,
-          longitude: 85.421729,
-          latitudeDelta: 0.05,
-          longitudeDelta: 0.05,
+          latitude: user?.user.location.latitude,
+          longitude: user?.user.location.longitude,
+          latitudeDelta: 0.09,
+          longitudeDelta: 0.09,
         }}>
+           <Marker
+            coordinate={{
+              latitude: user?.user.location.latitude,
+              longitude: user?.user.location.longitude,
+            }}
+            title="Your Location"
+            description="This is your current location."
+            pinColor="#578FCA"
+          />
         {/* Render markers dynamically based on data */}
         {nearBy?.map((marker, index) => (
           <Marker
@@ -125,8 +134,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width:"100%",
     bottom: 0,
-    // left: 10,
-    // right: 10,
     backgroundColor: 'rgba(255, 255, 255, 0.6)',
     borderRadius: 10,
     padding: 10,
@@ -138,8 +145,10 @@ const styles = StyleSheet.create({
     width: 150,
     padding:12,
     marginRight: 10,
-    borderWidth:1,
+
     borderColor:"gray",
+    backgroundColor:"white",
+    textAlign:"center",
     borderRadius:12,
     alignItems: 'center',
   },
@@ -151,6 +160,7 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     fontWeight: 'bold',
+    textAlign:"center",
     marginBottom: 5,
   },
   itemPrice: {
@@ -158,7 +168,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   itemLocation: {
-    fontSize: 12,
+    fontSize: 10,
     color: 'gray',
   },
 });

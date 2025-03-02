@@ -1,45 +1,64 @@
-import React from 'react';
+import React, {useState, useEffect } from 'react';
 import { 
   View, Text, Image, ScrollView, TouchableOpacity, 
   Alert, StyleSheet, Linking
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const OwnerDetailsScreen = ({ navigation }) => {
-  // Sample test data
-  const listing = {
-    title: "Luxury Apartment with City View",
-    description: "Fully furnished apartment with modern amenities.",
-    price: 20000,
-    room_type: "Apartment",
-    latitude: 27.670593,
-    longitude: 85.421726,
-    address: "Lazimpat, Kathmandu",
-    areaSize: "1200 sqft",
-    no_of_room: 3,
-    room_status: "available",
-    room_image_url: [
-      "https://rs-rooms-cdn.floorplanner.com/rooms/images/thumbs/480/j_PEp79B8tJse4Lm.jpg",
-      "https://rs-rooms-cdn.floorplanner.com/rooms/images/thumbs/480/j_PEp79B8tJse4Lm.jpg"
-    ],
-    wifi: true,
-    parking: true,
-    water: true,
-    disposal_charge: false,
-    electricity: true,
-    contact: "9800000000",
-    admin_approval: true,
-  };
+const OwnerDetailsScreen = ({ navigation, route }) => {
+  const [user, setUser] = useState();
+  const [room, setRoom] = useState();
+  const {id} = route.params;
+
+  console.log(id);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userString = await AsyncStorage.getItem('user');
+        const storedUser = userString ? JSON.parse(userString) : null;
+        setUser(storedUser);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  useEffect(()=>{
+        const fetchRoom = async()=>{
+          try{
+            const res = await fetch(`https://backend-roomfinder-api.onrender.com/rooms/get-room-details/${id}`,
+              {
+                method:"GET",
+                headers:{
+                  Authorization: `Bearer ${user?.accessToken}`
+                }
+              }
+            )
+            const data = await res.json();
+            console.log(data);
+            setRoom(data.data);
+          }
+          catch{}
+          finally{}
+        }
+
+        fetchRoom()
+  }, [user])
+
 
   // Handle delete with confirmation
   const handleDelete = () => {
     Alert.alert(
       "Confirm Delete",
-      "Are you sure you want to delete this listing?",
+      "Are you sure you want to delete this room?",
       [
         { text: "Cancel", style: "cancel" },
         { text: "Delete", onPress: () => {
-            Alert.alert("Deleted!", "Listing has been removed.");
+            Alert.alert("Deleted!", "room has been removed.");
             navigation.goBack();
           }
         },
@@ -51,24 +70,29 @@ const OwnerDetailsScreen = ({ navigation }) => {
     <ScrollView contentContainerStyle={styles.container}>
       {/* Images */}
       <ScrollView horizontal pagingEnabled>
-        {listing.room_image_url.map((image, index) => (
+        {room?.room_image_url.map((image, index) => (
           <Image key={index} source={{ uri: image }} style={styles.image} />
         ))}
       </ScrollView>
+      <View style={{padding:12, backgroundColor:"green", alignSelf:"flex-start",}}>
+        <Text>{room?.room_status === "available" ? "Available": "Booked"}</Text>
+      </View>
 
       <View style={styles.detailsContainer}>
-        <Text style={styles.title}>{listing.title}</Text>
-        <Text style={styles.price}>Rs. {listing.price}/month</Text>
-        <Text style={styles.description}>{listing.description}</Text>
+        <Text style={styles.title}>{room?.title}</Text>
+        <Text style={styles.price}>Rs. {room?.price}/month</Text>
+        <Text style={styles.description}>{room?.description}</Text>
 
-        <Text style={styles.info}><Icon name="location-on" size={18} /> {listing.address}</Text>
-        <Text style={styles.info}><Icon name="category" size={18} /> {listing.room_type}</Text>
-        <Text style={styles.info}><Icon name="aspect-ratio" size={18} /> {listing.areaSize}</Text>
-        <Text style={styles.info}><Icon name="meeting-room" size={18} /> {listing.no_of_room} Room(s)</Text>
-        <Text style={styles.info}><Icon name="wifi" size={18} /> WiFi: {listing.wifi ? "Available" : "Not Available"}</Text>
-        <Text style={styles.info}><Icon name="local-parking" size={18} /> Parking: {listing.parking ? "Available" : "Not Available"}</Text>
-        <Text style={styles.info}><Icon name="local-drink" size={18} /> Water: {listing.water ? "Available" : "Not Available"}</Text>
-        <Text style={styles.info}><Icon name="bolt" size={18} /> Electricity: {listing.electricity ? "Available" : "Not Available"}</Text>
+        <Text style={styles.info}><Icon name="location-on" size={18} /> {room?.address}</Text>
+        <Text style={styles.info}><Icon name="category" size={18} /> {room?.room_type}</Text>
+        <Text style={styles.info}><Icon name="aspect-ratio" size={18} /> {room?.areaSize}</Text>
+        <Text style={styles.info}><Icon name="meeting-room" size={18} /> {room?.no_of_room} Room(s)</Text>
+        <Text style={styles.info}><Icon name="wifi" size={18} /> WiFi: {room?.wifi ? "Available" : "Not Available"}</Text>
+        <Text style={styles.info}><Icon name="local-parking" size={18} /> Parking: {room?.parking ? "Available" : "Not Available"}</Text>
+        <Text style={styles.info}><Icon name="local-drink" size={18} /> Water: {room?.water ? "Available" : "Not Available"}</Text>
+        <Text style={styles.info}><Icon name="bolt" size={18} /> Electricity: {room?.electricity ? "Available" : "Not Available"}</Text>
+        <Text style={styles.info}><Icon name="restore-from-trash" size={18} /> Disposal Charge: {room?.disposal_charge
+ ? "Available" : "Not Available"}</Text>
         
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>

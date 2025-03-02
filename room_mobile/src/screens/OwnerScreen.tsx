@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -9,35 +9,80 @@ import {
   Dimensions,
   Alert,
   ScrollView,
-  StatusBar
+  StatusBar,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const screenWidth = Dimensions.get('window').width;
 
 const OwnerScreen = ({navigation}) => {
-  // Mock Data for Homeowner Listings
+  const [user, setUser] = useState();
+  const [rooms, setRooms] = useState();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userString = await AsyncStorage.getItem('user');
+        const storedUser = userString ? JSON.parse(userString) : null;
+        setUser(storedUser);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  console.log(user);
+  useEffect(() => {
+    const fetchRoom = async () => {
+      try {
+        const res = await fetch(
+          'https://backend-roomfinder-api.onrender.com/rooms/homeowner/rooms',
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${user?.accessToken}`,
+            },
+          },
+        );
+        const data = await res.json();
+        setRooms(data.data);
+      } catch {
+      } finally {
+      }
+    };
+    fetchRoom();
+  }, [user]);
+
   const [listings, setListings] = useState([
     {
       r_id: '1',
       title: 'Cozy Apartment in Kathmandu',
       price: 12000,
       address: 'Thamel, Kathmandu',
-      room_image_url: ['https://rs-rooms-cdn.floorplanner.com/rooms/images/thumbs/480/j_PEp79B8tJse4Lm.jpg'],
+      room_image_url: [
+        'https://rs-rooms-cdn.floorplanner.com/rooms/images/thumbs/480/j_PEp79B8tJse4Lm.jpg',
+      ],
     },
     {
       r_id: '2',
       title: 'Spacious Flat with Balcony',
       price: 18000,
       address: 'Lalitpur, Nepal',
-      room_image_url: ['https://rs-rooms-cdn.floorplanner.com/rooms/images/thumbs/480/j_PEp79B8tJse4Lm.jpg'],
+      room_image_url: [
+        'https://rs-rooms-cdn.floorplanner.com/rooms/images/thumbs/480/j_PEp79B8tJse4Lm.jpg',
+      ],
     },
     {
       r_id: '3',
       title: 'Single Room for Rent',
       price: 8000,
       address: 'Bhaktapur, Nepal',
-      room_image_url: ['https://rs-rooms-cdn.floorplanner.com/rooms/images/thumbs/480/j_PEp79B8tJse4Lm.jpg'],
+      room_image_url: [
+        'https://rs-rooms-cdn.floorplanner.com/rooms/images/thumbs/480/j_PEp79B8tJse4Lm.jpg',
+      ],
     },
   ]);
 
@@ -66,8 +111,8 @@ const OwnerScreen = ({navigation}) => {
       {/* Statistics Cards */}
       <View style={styles.statsContainer}>
         <View style={styles.statCard}>
-        <Icon name="dashboard" size={30} color="#673ab7" />
-        <Text style={styles.statTitle}>Total Listings</Text>
+          <Icon name="dashboard" size={30} color="#673ab7" />
+          <Text style={styles.statTitle}>Total Listings</Text>
           <Text style={styles.statValue}>{listings.length}</Text>
         </View>
 
@@ -89,13 +134,10 @@ const OwnerScreen = ({navigation}) => {
         <Text style={styles.emptyText}>No listings added yet.</Text>
       ) : (
         <FlatList
-          data={listings}
+          data={rooms}
           keyExtractor={item => item.r_id.toString()}
           renderItem={({item}) => (
-            <ListingCard
-              item={item}
-              navigation={navigation}
-            />
+            <ListingCard item={item} navigation={navigation} />
           )}
           showsVerticalScrollIndicator={false}
         />
@@ -106,7 +148,9 @@ const OwnerScreen = ({navigation}) => {
 
 /** Listing Card Component */
 const ListingCard = ({item, navigation}) => (
-  <TouchableOpacity onPress={()=> navigation.navigate("OwnerDetails")} style={styles.card}>
+  <TouchableOpacity
+    onPress={() => navigation.navigate('OwnerDetails', {id: item.r_id})}
+    style={styles.card}>
     <Image source={{uri: item.room_image_url[0]}} style={styles.image} />
     <View style={styles.details}>
       <Text style={styles.title}>{item.title}</Text>
@@ -124,7 +168,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
-    paddingVertical:48,
+    paddingVertical: 48,
     backgroundColor: '#f9f9f9',
   },
   heroSection: {

@@ -24,10 +24,10 @@ const HomeScreen = ({navigation}) => {
   useEffect(() => {
     const fetchRecommendations = async () => {
       if (!user || !user.accessToken || !firstLogin) {
-        console.log("User not available or not first login, skipping fetch");
+        console.log('User not available or not first login, skipping fetch');
         return;
       }
-  
+
       try {
         const response = await fetch(
           'https://backend-roomfinder-api.onrender.com/recommend/rooms',
@@ -36,30 +36,28 @@ const HomeScreen = ({navigation}) => {
             headers: {
               Authorization: `Bearer ${user.accessToken}`,
             },
-          }
+          },
         );
 
-        
-  
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-  
+
         const data = await response.json();
-        setFeaturedData(data); 
+        setFeaturedData(data);
       } catch (error) {
-        console.error("Error fetching recommended rooms:", error);
+        console.error('Error fetching recommended rooms:', error);
       }
     };
-  
+
     if (user && firstLogin) {
       fetchRecommendations();
     }
   }, [user, firstLogin]);
 
-  useEffect(()=>{
-    AsyncStorage.removeItem("fistLogin");
-  }, [])
+  useEffect(() => {
+    AsyncStorage.removeItem('fistLogin');
+  }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -94,7 +92,7 @@ const HomeScreen = ({navigation}) => {
 
       try {
         const response = await fetch(
-          'https://backend-roomfinder-api.onrender.com/rooms/nearby/1000',
+          'https://backend-roomfinder-api.onrender.com/rooms/nearby/10',
           {
             method: 'GET',
             headers: {
@@ -118,16 +116,17 @@ const HomeScreen = ({navigation}) => {
     if (user) {
       fetchNear();
     }
-  }, [user]); // Runs when user changes
+  }, [user]); 
 
   if (firstLogin === null || user === null) {
     return null;
   }
 
-  if (!firstLogin && user?.user?.role !== "homeOwner") {
+  if (!firstLogin && user?.user?.role !== 'homeOwner') {
     return <UserPreferences />;
   }
 
+  console.log(featuredData)
 
   return (
     <SafeAreaView style={styles.container}>
@@ -177,7 +176,9 @@ const HomeScreen = ({navigation}) => {
           data={nearBy}
           keyExtractor={item => item.r_id.toString()}
           showsVerticalScrollIndicator={false}
-          renderItem={({item}) => <NearYouCard  item={item} navigation={navigation}/>}
+          renderItem={({item}) => (
+            <NearYouCard item={item} navigation={navigation} />
+          )}
           ItemSeparatorComponent={() => <View style={{height: 10}} />}
         />
       </ScrollView>
@@ -189,13 +190,11 @@ const HomeScreen = ({navigation}) => {
 const SectionTitle = ({title, name, navigation}) => (
   <View style={styles.sectionHeader}>
     <Text style={styles.sectionTitle}>{title}</Text>
-    {
-      title !== "Recommendation" &&(
-        <TouchableOpacity onPress={() => navigation.navigate(name)}>
-      <Text style={styles.seeAllText}>See All</Text>
-    </TouchableOpacity>
-      )
-    }
+    {title !== 'Recommendation' && (
+      <TouchableOpacity onPress={() => navigation.navigate(name)}>
+        <Text style={styles.seeAllText}>See All</Text>
+      </TouchableOpacity>
+    )}
   </View>
 );
 
@@ -204,10 +203,15 @@ const FeaturedCard = ({item, navigation}) => (
   <TouchableOpacity
     onPress={() => navigation.navigate('Details', {id: item.room_id})}
     style={styles.featuredCard}>
-    <Image source={{uri: item.room_details.room_image_url[0]}} style={styles.featuredImage} />
+    <Image
+      source={{uri: item.room_details.room_image_url[0]}}
+      style={styles.featuredImage}
+    />
     <View style={styles.featuredDetails}>
-      <Text style={styles.featuredTitle}>{item.room_details.name}</Text>
-      <Text style={styles.featuredPrice}>Rs. {item.room_details.price}/month</Text>
+      <Text style={styles.featuredTitle}>{item.room_details.title}</Text>
+      <Text style={styles.featuredPrice}>
+        Rs. {item.room_details.price}/month
+      </Text>
       <View style={styles.iconRow}>
         <Icon name="location-on" size={16} color="gray" />
         <Text style={styles.featuredLocation}>{item.room_details.address}</Text>
@@ -228,11 +232,10 @@ const FeaturedCard = ({item, navigation}) => (
 );
 
 /** Near You Listing Card */
-const NearYouCard = ({item,navigation}) => (
-  
+const NearYouCard = ({item, navigation}) => (
   <TouchableOpacity
-  onPress={() => navigation.navigate('Details', {id:item.r_id})}
-  style={styles.nearCard}>
+    onPress={() => navigation.navigate('Details', {id: item.r_id})}
+    style={styles.nearCard}>
     <Image source={{uri: item.room_image_url[0]}} style={styles.nearImage} />
     <View style={styles.nearDetails}>
       <Text style={styles.nearTitle}>{item.title}</Text>

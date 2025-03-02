@@ -1,34 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from "react";
 
 // Sample data for house details
 const houseData = [
   {
     id: 1,
-    image: 'https://psgroup.in/blog/wp-content/uploads/2021/01/Navyom-Living-dining.jpg',
-    name: 'Luxury Villa',
-    location: 'Beverly Hills, CA',
-    price: '$1,200,000',
+    image:
+      "https://psgroup.in/blog/wp-content/uploads/2021/01/Navyom-Living-dining.jpg",
+    name: "Luxury Villa",
+    location: "Beverly Hills, CA",
+    price: "$1,200,000",
     description:
-      'A luxurious villa with 5 bedrooms, a private pool, and stunning city views.',
-    status: 'Booked',
+      "A luxurious villa with 5 bedrooms, a private pool, and stunning city views.",
+    status: "Booked",
   },
   {
     id: 2,
-    image: 'https://psgroup.in/blog/wp-content/uploads/2021/01/Navyom-Living-dining.jpg',
-    name: 'Modern Apartment',
-    location: 'New York, NY',
-    price: '$450,000',
+    image:
+      "https://psgroup.in/blog/wp-content/uploads/2021/01/Navyom-Living-dining.jpg",
+    name: "Modern Apartment",
+    location: "New York, NY",
+    price: "$450,000",
     description:
-      'A stylish apartment located in the heart of the city, with 2 bedrooms and modern amenities.',
-    status: 'Unbooked', // Options: Booked, Unbooked
+      "A stylish apartment located in the heart of the city, with 2 bedrooms and modern amenities.",
+    status: "Unbooked", // Options: Booked, Unbooked
   },
 ];
 
 export default function Flat() {
-  const [activeTab, setActiveTab] = useState('Approved');
+  const [activeTab, setActiveTab] = useState("Approved");
   const [showPopup, setShowPopup] = useState(false);
-  const [declineMessage, setDeclineMessage] = useState('');
+  const [declineMessage, setDeclineMessage] = useState("");
   const [currentHouse, setCurrentHouse] = useState(null);
+  const [flats, setFlats] = useState([]);
 
   const handleDeclineClick = (house) => {
     setCurrentHouse(house);
@@ -37,20 +40,43 @@ export default function Flat() {
 
   const handlePopupClose = () => {
     setShowPopup(false);
-    setDeclineMessage('');
+    setDeclineMessage("");
     setCurrentHouse(null);
   };
 
   const handleDeclineSubmit = () => {
-    console.log('Decline message:', declineMessage);
-    console.log('Declined house:', currentHouse);
+    console.log("Decline message:", declineMessage);
+    console.log("Declined house:", currentHouse);
     handlePopupClose();
   };
 
+  useEffect(() => {
+    const fetchFlats = async () => {
+      try {
+        const res = await fetch(
+          "https://backend-roomfinder-api.onrender.com/admin/filter-flats",
+          {
+            method: "GET",
+            headers: {
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk5YThhYjAxLWRmZGMtNDE4OS04MDFiLWYzMGVmOWEyNDNhMiIsImVtYWlsIjoiZGluZXNoQGdtYWlsLmNvbSIsInBob25lIjoiOTYzMDI1ODc0MSIsImlhdCI6MTc0MDg5MjQ0NCwiZXhwIjoxNzQwOTc4ODQ0fQ.Lye65wI8YlchgONtl4NYyfupEDU0paVMzi2AXWH_aVM",
+            },
+          }
+        );
+
+        const data = await res.json();
+        console.log(data);
+      } catch {
+      } finally {
+      }
+    };
+    fetchFlats();
+  }, []);
+
   const filteredHouses =
-    activeTab === 'Approved'
+    activeTab === "Approved"
       ? houseData.filter((house) => house.status)
-      : houseData; 
+      : houseData;
 
   return (
     <div className="p-6">
@@ -60,21 +86,21 @@ export default function Flat() {
         <div className="flex gap-4">
           <button
             className={`py-2 px-4 rounded ${
-              activeTab === 'Approved'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 text-gray-700'
+              activeTab === "Approved"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-gray-700"
             }`}
-            onClick={() => setActiveTab('Approved')}
+            onClick={() => setActiveTab("Approved")}
           >
             Approved
           </button>
           <button
             className={`py-2 px-4 rounded ${
-              activeTab === 'Pending'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 text-gray-700'
+              activeTab === "Pending"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-gray-700"
             }`}
-            onClick={() => setActiveTab('Pending')}
+            onClick={() => setActiveTab("Pending")}
           >
             Pending
           </button>
@@ -104,13 +130,13 @@ export default function Flat() {
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 <strong>Description:</strong> {house.description}
               </p>
-              {activeTab === 'Approved' ? (
+              {activeTab === "Approved" ? (
                 <div className="flex items-center gap-2">
                   <span
                     className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                      house.status === 'Booked'
-                        ? 'bg-green-100 text-green-600'
-                        : 'bg-gray-100 text-gray-600'
+                      house.status === "Booked"
+                        ? "bg-green-100 text-green-600"
+                        : "bg-gray-100 text-gray-600"
                     }`}
                   >
                     {house.status}

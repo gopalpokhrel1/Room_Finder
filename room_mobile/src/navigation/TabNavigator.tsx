@@ -13,6 +13,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import HomeOwnerScreen from '../screens/HomeOwnerScreen';
 import OwnerScreen from '../screens/OwnerScreen';
+import BookingRequestScreen from '../screens/BookingRequestScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -118,6 +119,18 @@ const TabNavigator = () => {
               <CustomTabBarButton {...props}>
                 <Icon name="add" size={30} color="#ffffff" />
               </CustomTabBarButton>
+            ),
+          }}
+        />
+      )}
+      {user?.user.role === 'homeOwner' && (
+        <Tab.Screen
+          name="Booking"
+          component={BookingRequestScreen}
+          options={{
+            headerShown: false,
+            tabBarIcon: ({color}) => (
+                <Icon name="add" size={30} color={color} />
             ),
           }}
         />

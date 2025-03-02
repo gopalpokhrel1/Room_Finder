@@ -62,6 +62,7 @@ const HomeOwnerScreen = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [showMap, setShowMap] = useState(false);
 
   const validateBasicInfo = () => {
     let newErrors = {};
@@ -167,7 +168,7 @@ const HomeOwnerScreen = () => {
       formData.append(key, form.facilities[key]);
     });
 
-
+    console.log(formData);
     try {
       setLoading(true);
 
@@ -362,7 +363,7 @@ const HomeOwnerScreen = () => {
       {step === 3 && (
         <>
           <Text style={styles.sectionTitle}>📍 Select Location</Text>
-          <LocationPicker onLocationSelect={handleLocationSelect} />
+          <LocationPicker setShowMap={setShowMap} onLocationSelect={handleLocationSelect} />
 
           <View style={styles.navButtons}>
             <TouchableOpacity
