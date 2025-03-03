@@ -3,6 +3,7 @@ import { Edit, Trash2 } from 'lucide-react';
 
 const TableThree = () => {
   const [user, setUser] = useState([]);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -12,7 +13,7 @@ const TableThree = () => {
           {
             method: 'GET',
             headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk5YThhYjAxLWRmZGMtNDE4OS04MDFiLWYzMGVmOWEyNDNhMiIsImVtYWlsIjoiZGluZXNoQGdtYWlsLmNvbSIsInBob25lIjoiOTYzMDI1ODc0MSIsImlhdCI6MTc0MDg5MDcyMSwiZXhwIjoxNzQwOTc3MTIxfQ.YFyo7C4XYlB9k5EfuuebGDFjy_8ExWAS0W3OgXTpvx8`
+              Authorization : `Bearer ${token}`
             }
           }
         );

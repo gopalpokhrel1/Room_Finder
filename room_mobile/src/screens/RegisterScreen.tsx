@@ -93,7 +93,6 @@ const RegisterScreen = () => {
             body: JSON.stringify(registrationData),
           },
         );
-        console.log(response);
         const result = await response.json();
 
         console.log(response);

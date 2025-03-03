@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -60,6 +61,43 @@ const DetailsScreen = ({route}) => {
 
     fetchUserAndRoom();
   }, [id]);
+
+
+  const handleBook = async () => {
+    const val = {
+      room_id: data?.r_id,
+      user_id: user?.user?.id,
+      price: data?.price,
+    };
+  
+    try {
+      const res = await fetch(
+        "https://backend-roomfinder-api.onrender.com/bookings/request-booking",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.accessToken}`,
+          },
+          body: JSON.stringify(val),
+        }
+      );
+  
+      const result = await res.json();
+  
+      if (res.ok) {
+        Alert.alert("Success", "Your booking request has been sent!", [
+          { text: "OK" },
+        ]);
+      } else {
+        Alert.alert("Error", result.message || "Failed to book the room.");
+      }
+    } catch (error) {
+      console.error("Error booking room:", error);
+      Alert.alert("Error", "Something went wrong. Please try again later.");
+    }
+  };
+  
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -158,7 +196,7 @@ const DetailsScreen = ({route}) => {
           </ScrollView>
 
           {/* Book Now Button */}
-          <TouchableOpacity style={styles.bookNowButton}>
+          <TouchableOpacity style={styles.bookNowButton} onPress={handleBook}>
             <Text style={styles.bookNowText}>Book Now</Text>
           </TouchableOpacity>
         </ScrollView>

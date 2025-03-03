@@ -6,6 +6,9 @@ import DetailsScreen from '../screens/DetailsScreen';
 import NearestMapScreen from '../screens/NearestMapScreen';
 import OwnerDetailsScreen from '../screens/OwnerDetailsScreen';
 import SearchScreen from '../screens/SearchScreen';
+import BookedScreen from '../screens/BookedScreen';
+import PendingScreen from '../screens/PendingScreen';
+import HomeOwnerScreen from '../screens/HomeOwnerScreen';
 const Stack = createNativeStackNavigator();
 
 const AuthNavigation = () => {
@@ -27,6 +30,11 @@ const AuthNavigation = () => {
         options={{headerShown: false}}
       />
       <Stack.Screen
+        name="Add"
+        component={HomeOwnerScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
         name="Details"
         component={DetailsScreen}
         options={{headerShown: false}}
@@ -45,6 +53,15 @@ const AuthNavigation = () => {
         name="Search"
         component={SearchScreen}
         options={{headerShown: false}}
+      />
+       <Stack.Screen
+        name="Booked"
+        component={BookedScreen}
+      />
+       <Stack.Screen
+        name="Pending"
+        component={PendingScreen}
+
       />
     </Stack.Navigator>
   );

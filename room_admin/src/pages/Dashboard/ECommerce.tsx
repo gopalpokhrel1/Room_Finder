@@ -9,13 +9,15 @@ const ECommerce: React.FC = () => {
   const [data, setData] = useState();
   const [flats, setFlats] = useState();
 
+  const token = localStorage.getItem("token");
+
   useEffect(()=>{
     const fetchStatus = async() =>{
       try{
         const res = await fetch("https://backend-roomfinder-api.onrender.com/admin/users/stats", {
           method:"GET",
           headers:{
-            Authorization :`Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk5YThhYjAxLWRmZGMtNDE4OS04MDFiLWYzMGVmOWEyNDNhMiIsImVtYWlsIjoiZGluZXNoQGdtYWlsLmNvbSIsInBob25lIjoiOTYzMDI1ODc0MSIsImlhdCI6MTc0MDg5MDcyMSwiZXhwIjoxNzQwOTc3MTIxfQ.YFyo7C4XYlB9k5EfuuebGDFjy_8ExWAS0W3OgXTpvx8`
+           Authorization : `Bearer ${token}`
           }
         })
         const data = await res.json();
@@ -35,7 +37,8 @@ const ECommerce: React.FC = () => {
         const res = await fetch("https://backend-roomfinder-api.onrender.com/admin/roomkpis", {
           method:"GET",
           headers:{
-            Authorization :`Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk5YThhYjAxLWRmZGMtNDE4OS04MDFiLWYzMGVmOWEyNDNhMiIsImVtYWlsIjoiZGluZXNoQGdtYWlsLmNvbSIsInBob25lIjoiOTYzMDI1ODc0MSIsImlhdCI6MTc0MDg5MDcyMSwiZXhwIjoxNzQwOTc3MTIxfQ.YFyo7C4XYlB9k5EfuuebGDFjy_8ExWAS0W3OgXTpvx8`
+            Authorization : `Bearer ${token}`
+
           }
         })
         const data = await res.json();

@@ -109,7 +109,7 @@ const TabNavigator = () => {
         </>
       )}
 
-      {user?.user.role === 'homeOwner' && (
+      {/* {user?.user.role === 'homeOwner' && (
         <Tab.Screen
           name="Add"
           component={HomeOwnerScreen}
@@ -122,7 +122,7 @@ const TabNavigator = () => {
             ),
           }}
         />
-      )}
+      )} */}
       {user?.user.role === 'homeOwner' && (
         <Tab.Screen
           name="Booking"
@@ -130,7 +130,7 @@ const TabNavigator = () => {
           options={{
             headerShown: false,
             tabBarIcon: ({color}) => (
-                <Icon name="add" size={30} color={color} />
+                <Icon name="arrow-circle-up" size={30} color={color} />
             ),
           }}
         />
@@ -168,7 +168,6 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 5},
   },
   loadingContainer: {
-    // ✅ Style for Loading Indicator
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',

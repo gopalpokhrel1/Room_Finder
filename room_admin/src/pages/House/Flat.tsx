@@ -4,6 +4,7 @@ import { Edit, Trash } from "lucide-react";
 export default function Flat() {
   const [activeTab, setActiveTab] = useState("Approved");
   const [flats, setFlats] = useState([]);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchFlats = async () => {
@@ -13,8 +14,8 @@ export default function Flat() {
           {
             method: "GET",
             headers: {
-              Authorization:
-                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk5YThhYjAxLWRmZGMtNDE4OS04MDFiLWYzMGVmOWEyNDNhMiIsImVtYWlsIjoiZGluZXNoQGdtYWlsLmNvbSIsInBob25lIjoiOTYzMDI1ODc0MSIsImlhdCI6MTc0MDg5MjQ0NCwiZXhwIjoxNzQwOTc4ODQ0fQ.Lye65wI8YlchgONtl4NYyfupEDU0paVMzi2AXWH_aVM",
+              Authorization : `Bearer ${token}`
+
             },
           }
         );
@@ -37,9 +38,24 @@ export default function Flat() {
     // Implement edit functionality
   };
 
-  const handleApprove = (id) => {
-    console.log("Approve flat with ID:", id);
-    // Implement approve API call here
+  const handleApprove =async(id) => {
+    try {
+      const res = await fetch(
+        `https://backend-roomfinder-api.onrender.com/admin/approve-room/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization : `Bearer ${token}`
+
+          },
+        }
+      );
+      const data = await res.json();
+       console.log(data);
+    } catch (error) {
+      console.error("Error fetching flats:", error);
+    }
+
   };
 
   const handleDecline = (id) => {
