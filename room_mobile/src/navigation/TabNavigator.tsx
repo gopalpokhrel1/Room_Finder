@@ -17,18 +17,10 @@ import BookingRequestScreen from '../screens/BookingRequestScreen';
 
 const Tab = createBottomTabNavigator();
 
-const CustomTabBarButton = ({children, onPress}) => (
-  <TouchableOpacity
-    style={styles.fabContainer}
-    activeOpacity={0.8}
-    onPress={onPress}>
-    <View style={styles.fabButton}>{children}</View>
-  </TouchableOpacity>
-);
 
 const TabNavigator = () => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // ✅ Add Loading State
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -39,7 +31,7 @@ const TabNavigator = () => {
       } catch (error) {
         console.error('Error fetching user:', error);
       } finally {
-        setLoading(false); // ✅ Stop loading once the data is fetched
+        setLoading(false);
       }
     };
 
@@ -48,7 +40,6 @@ const TabNavigator = () => {
 
   if (loading) {
     return (
-      // ✅ Show loading indicator until user is fetched
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#578FCA" />
       </View>

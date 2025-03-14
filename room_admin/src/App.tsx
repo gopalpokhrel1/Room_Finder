@@ -18,9 +18,10 @@ import TableThree from "./components/Tables/TableThree";
 import House from "./pages/House/House";
 import Flat from "./pages/House/Flat";
 import Room from "./pages/House/Room";
+import BookingPage from "./pages/Booking/BookingPage";
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
-  const isAuthenticated = localStorage.getItem("token"); // Check token from localStorage
+  const isAuthenticated = localStorage.getItem("token"); 
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -74,6 +75,7 @@ function App() {
                   }
                 />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/booking" element={<BookingPage />} />
                 <Route path="/flats" element={<Flat />} />
                 <Route path="/rooms" element={<Room />} />
                 <Route path="/forms/form-elements" element={<FormElements />} />

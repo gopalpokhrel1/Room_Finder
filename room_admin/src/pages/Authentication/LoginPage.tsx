@@ -1,9 +1,10 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 export default function LoginPage() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ phone: "", password: "" });
+  const [loading, setLoading] = useState(false);
 
   const validate = () => {
     let isValid = true;
@@ -29,12 +30,13 @@ export default function LoginPage() {
     return isValid;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validate()) return;
 
     try {
+      setLoading(true);
       const res = await fetch(
         "https://backend-roomfinder-api.onrender.com/users/login",
         {
@@ -47,7 +49,7 @@ export default function LoginPage() {
       );
 
       const data = await res.json();
-      console.log(data);
+      data;
 
       if (!res.ok) {
         throw new Error(data.message || "Login failed");
@@ -55,9 +57,11 @@ export default function LoginPage() {
 
       localStorage.setItem("token", data.accessToken);
       alert("Login successful!");
-      window.location.href = "/"; 
+      window.location.href = "/";
     } catch (error) {
       alert(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -102,15 +106,9 @@ export default function LoginPage() {
             type="submit"
             className="w-full py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           >
-            Login
+            {loading ? "Logging" : "Login"}
           </button>
         </form>
-        <p className="mt-4 text-sm text-center text-gray-600">
-          Don't have an account?{" "}
-          <a href="#" className="text-blue-600 hover:underline">
-            Sign up
-          </a>
-        </p>
       </div>
     </div>
   );

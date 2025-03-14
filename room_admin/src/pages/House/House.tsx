@@ -1,33 +1,33 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 // Sample data for house details
 const houseData = [
   {
     id: 1,
-    image: 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg',
-    name: 'Luxury Villa',
-    location: 'Beverly Hills, CA',
-    price: '$1,200,000',
+    image: "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg",
+    name: "Luxury Villa",
+    location: "Beverly Hills, CA",
+    price: "$1,200,000",
     description:
-      'A luxurious villa with 5 bedrooms, a private pool, and stunning city views.',
-    status: 'Booked',
+      "A luxurious villa with 5 bedrooms, a private pool, and stunning city views.",
+    status: "Booked",
   },
   {
     id: 2,
-    image: 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg',
-    name: 'Modern Apartment',
-    location: 'New York, NY',
-    price: '$450,000',
+    image: "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg",
+    name: "Modern Apartment",
+    location: "New York, NY",
+    price: "$450,000",
     description:
-      'A stylish apartment located in the heart of the city, with 2 bedrooms and modern amenities.',
-    status: 'Unbooked', // Options: Booked, Unbooked
+      "A stylish apartment located in the heart of the city, with 2 bedrooms and modern amenities.",
+    status: "Unbooked", // Options: Booked, Unbooked
   },
 ];
 
 export default function House() {
-  const [activeTab, setActiveTab] = useState('Approved');
+  const [activeTab, setActiveTab] = useState("Approved");
   const [showPopup, setShowPopup] = useState(false);
-  const [declineMessage, setDeclineMessage] = useState('');
+  const [declineMessage, setDeclineMessage] = useState("");
   const [currentHouse, setCurrentHouse] = useState(null);
 
   const handleDeclineClick = (house) => {
@@ -37,18 +37,18 @@ export default function House() {
 
   const handlePopupClose = () => {
     setShowPopup(false);
-    setDeclineMessage('');
+    setDeclineMessage("");
     setCurrentHouse(null);
   };
 
   const handleDeclineSubmit = () => {
-    console.log('Decline message:', declineMessage);
-    console.log('Declined house:', currentHouse);
+    "Decline message:", declineMessage;
+    "Declined house:", currentHouse;
     handlePopupClose();
   };
 
   const filteredHouses =
-    activeTab === 'Approved'
+    activeTab === "Approved"
       ? houseData.filter((house) => house.status) // Show all in Approved
       : houseData; // Show all in Pending
 
@@ -60,21 +60,21 @@ export default function House() {
         <div className="flex gap-4">
           <button
             className={`py-2 px-4 rounded ${
-              activeTab === 'Approved'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 text-gray-700'
+              activeTab === "Approved"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-gray-700"
             }`}
-            onClick={() => setActiveTab('Approved')}
+            onClick={() => setActiveTab("Approved")}
           >
             Approved
           </button>
           <button
             className={`py-2 px-4 rounded ${
-              activeTab === 'Pending'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 text-gray-700'
+              activeTab === "Pending"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-gray-700"
             }`}
-            onClick={() => setActiveTab('Pending')}
+            onClick={() => setActiveTab("Pending")}
           >
             Pending
           </button>
@@ -104,13 +104,13 @@ export default function House() {
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 <strong>Description:</strong> {house.description}
               </p>
-              {activeTab === 'Approved' ? (
+              {activeTab === "Approved" ? (
                 <div className="flex items-center gap-2">
                   <span
                     className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                      house.status === 'Booked'
-                        ? 'bg-green-100 text-green-600'
-                        : 'bg-gray-100 text-gray-600'
+                      house.status === "Booked"
+                        ? "bg-green-100 text-green-600"
+                        : "bg-gray-100 text-gray-600"
                     }`}
                   >
                     {house.status}

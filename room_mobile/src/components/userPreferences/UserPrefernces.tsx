@@ -76,7 +76,7 @@ const UserPreferences = () => {
       );
 
       const result = await response.json();
-      console.log(result);
+      result;
       if (response.ok) {
         Alert.alert('Preferences saved successfully!');
         AsyncStorage.setItem('firstLogin', 'saved');

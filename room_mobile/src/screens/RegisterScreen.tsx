@@ -79,7 +79,7 @@ const RegisterScreen = () => {
         role,
         location,
       };
-      console.log(registrationData);
+      registrationData;
 
       try {
         setLoading(true);
@@ -95,7 +95,7 @@ const RegisterScreen = () => {
         );
         const result = await response.json();
 
-        console.log(response);
+        response;
 
         if (response.ok) {
           Alert.alert('Success', 'Registration Successful!');
@@ -125,169 +125,174 @@ const RegisterScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-    {
-      showMap ? (
-        <LocationPicker setShowMap={setShowMap} onLocationSelect={handleLocationSelect}/>
-      ):(
+      {showMap ? (
+        <LocationPicker
+          setShowMap={setShowMap}
+          onLocationSelect={handleLocationSelect}
+        />
+      ) : (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Create Account</Text>
-          <Text style={styles.subtitle}>
-            Please fill in the details to register
-          </Text>
-        </View>
-
-        <View style={styles.formContainer}>
-          {/* Full Name */}
-          <Text style={styles.label}>Full Name</Text>
-          <View style={styles.inputContainer}>
-            <Icon name="person" size={20} color="#888" style={styles.icon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your full name"
-              placeholderTextColor="#888"
-              value={fullName}
-              onChangeText={setFullName}
-            />
+          <View style={styles.header}>
+            <Text style={styles.title}>Create Account</Text>
+            <Text style={styles.subtitle}>
+              Please fill in the details to register
+            </Text>
           </View>
-          {errors.fullName && (
-            <Text style={styles.errorText}>{errors.fullName}</Text>
-          )}
 
-          {/* Email */}
-          <Text style={styles.label}>Email</Text>
-          <View style={styles.inputContainer}>
-            <Icon name="email" size={20} color="#888" style={styles.icon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your email"
-              placeholderTextColor="#888"
-              value={email}
-              onChangeText={setEmail}
-            />
-          </View>
-          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-
-          {/* Phone */}
-          <Text style={styles.label}>Phone</Text>
-          <View style={styles.inputContainer}>
-            <Icon name="phone" size={20} color="#888" style={styles.icon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your phone number"
-              placeholderTextColor="#888"
-              value={phone}
-              onChangeText={setPhone}
-            />
-          </View>
-          {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
-
-          {/* Password */}
-          <Text style={styles.label}>Password</Text>
-          <View style={styles.inputContainer}>
-            <Icon name="lock" size={20} color="#888" style={styles.icon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your password"
-              placeholderTextColor="#888"
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-            />
-          </View>
-          {errors.password && (
-            <Text style={styles.errorText}>{errors.password}</Text>
-          )}
-
-          {/* Confirm Password */}
-          <Text style={styles.label}>Confirm Password</Text>
-          <View style={styles.inputContainer}>
-            <Icon name="lock" size={20} color="#888" style={styles.icon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Confirm your password"
-              placeholderTextColor="#888"
-              secureTextEntry
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-            />
-          </View>
-          {errors.confirmPassword && (
-            <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-          )}
-
-          {/* Gender Picker */}
-          <Text style={styles.label}>Gender</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={gender}
-              onValueChange={itemValue => setGender(itemValue)}
-              style={styles.picker}>
-              <Picker.Item label="Select Gender" value="" />
-              <Picker.Item label="Male" value="male" />
-              <Picker.Item label="Female" value="female" />
-              <Picker.Item label="Other" value="other" />
-            </Picker>
-          </View>
-          {errors.gender && (
-            <Text style={styles.errorText}>{errors.gender}</Text>
-          )}
-
-          {/* Date of Birth */}
-          <Text style={styles.label}>Date of Birth</Text>
-          <View style={styles.inputContainer}>
-            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+          <View style={styles.formContainer}>
+            {/* Full Name */}
+            <Text style={styles.label}>Full Name</Text>
+            <View style={styles.inputContainer}>
+              <Icon name="person" size={20} color="#888" style={styles.icon} />
               <TextInput
                 style={styles.input}
-                placeholder="Select your date of birth"
+                placeholder="Enter your full name"
                 placeholderTextColor="#888"
-                editable={false}
-                value={dob}
+                value={fullName}
+                onChangeText={setFullName}
               />
+            </View>
+            {errors.fullName && (
+              <Text style={styles.errorText}>{errors.fullName}</Text>
+            )}
+
+            {/* Email */}
+            <Text style={styles.label}>Email</Text>
+            <View style={styles.inputContainer}>
+              <Icon name="email" size={20} color="#888" style={styles.icon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your email"
+                placeholderTextColor="#888"
+                value={email}
+                onChangeText={setEmail}
+              />
+            </View>
+            {errors.email && (
+              <Text style={styles.errorText}>{errors.email}</Text>
+            )}
+
+            {/* Phone */}
+            <Text style={styles.label}>Phone</Text>
+            <View style={styles.inputContainer}>
+              <Icon name="phone" size={20} color="#888" style={styles.icon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your phone number"
+                placeholderTextColor="#888"
+                value={phone}
+                onChangeText={setPhone}
+              />
+            </View>
+            {errors.phone && (
+              <Text style={styles.errorText}>{errors.phone}</Text>
+            )}
+
+            {/* Password */}
+            <Text style={styles.label}>Password</Text>
+            <View style={styles.inputContainer}>
+              <Icon name="lock" size={20} color="#888" style={styles.icon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your password"
+                placeholderTextColor="#888"
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+              />
+            </View>
+            {errors.password && (
+              <Text style={styles.errorText}>{errors.password}</Text>
+            )}
+
+            {/* Confirm Password */}
+            <Text style={styles.label}>Confirm Password</Text>
+            <View style={styles.inputContainer}>
+              <Icon name="lock" size={20} color="#888" style={styles.icon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Confirm your password"
+                placeholderTextColor="#888"
+                secureTextEntry
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+              />
+            </View>
+            {errors.confirmPassword && (
+              <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+            )}
+
+            {/* Gender Picker */}
+            <Text style={styles.label}>Gender</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={gender}
+                onValueChange={itemValue => setGender(itemValue)}
+                style={styles.picker}>
+                <Picker.Item label="Select Gender" value="" />
+                <Picker.Item label="Male" value="male" />
+                <Picker.Item label="Female" value="female" />
+                <Picker.Item label="Other" value="other" />
+              </Picker>
+            </View>
+            {errors.gender && (
+              <Text style={styles.errorText}>{errors.gender}</Text>
+            )}
+
+            {/* Date of Birth */}
+            <Text style={styles.label}>Date of Birth</Text>
+            <View style={styles.inputContainer}>
+              <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Select your date of birth"
+                  placeholderTextColor="#888"
+                  editable={false}
+                  value={dob}
+                />
+              </TouchableOpacity>
+            </View>
+            {errors.dob && <Text style={styles.errorText}>{errors.dob}</Text>}
+
+            {/* Address */}
+            <Text style={styles.label}>Address</Text>
+            <View style={styles.inputContainer}>
+              <Icon name="home" size={20} color="#888" style={styles.icon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your address"
+                placeholderTextColor="#888"
+                value={address}
+                onChangeText={setAddress}
+              />
+            </View>
+            {errors.address && (
+              <Text style={styles.errorText}>{errors.address}</Text>
+            )}
+
+            {/* Role Picker */}
+            <Text style={styles.label}>Role</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={role}
+                onValueChange={itemValue => setRole(itemValue)}
+                style={styles.picker}>
+                <Picker.Item label="Select Role" value="" />
+                <Picker.Item label="Home Owner" value="homeOwner" />
+                <Picker.Item label="User" value="renter" />
+              </Picker>
+            </View>
+            {errors.role && <Text style={styles.errorText}>{errors.role}</Text>}
+
+            {/* Location (Latitude and Longitude) */}
+            <Text style={styles.label}>Location</Text>
+            <TouchableOpacity
+              style={styles.showMapButton}
+              onPress={() => setShowMap(true)}>
+              <Text style={styles.showMapText}>Pick location 🗺️</Text>
             </TouchableOpacity>
-          </View>
-          {errors.dob && <Text style={styles.errorText}>{errors.dob}</Text>}
 
-          {/* Address */}
-          <Text style={styles.label}>Address</Text>
-          <View style={styles.inputContainer}>
-            <Icon name="home" size={20} color="#888" style={styles.icon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your address"
-              placeholderTextColor="#888"
-              value={address}
-              onChangeText={setAddress}
-            />
-          </View>
-          {errors.address && (
-            <Text style={styles.errorText}>{errors.address}</Text>
-          )}
-
-          {/* Role Picker */}
-          <Text style={styles.label}>Role</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={role}
-              onValueChange={itemValue => setRole(itemValue)}
-              style={styles.picker}>
-              <Picker.Item label="Select Role" value="" />
-              <Picker.Item label="Home Owner" value="homeOwner" />
-              <Picker.Item label="User" value="user" />
-            </Picker>
-          </View>
-          {errors.role && <Text style={styles.errorText}>{errors.role}</Text>}
-
-          {/* Location (Latitude and Longitude) */}
-          <Text style={styles.label}>Location</Text>
-          <TouchableOpacity style={styles.showMapButton} onPress={()=> setShowMap(true)}>
-            <Text style={styles.showMapText}>
-              Pick location 🗺️
-            </Text>
-          </TouchableOpacity>
-
-          
-          {/* <View style={styles.inputContainer}>
+            {/* <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
               placeholder="Latitude"
@@ -307,25 +312,26 @@ const RegisterScreen = () => {
             />
           </View> */}
 
-          {errors.location && (
-            <Text style={styles.errorText}>{errors.location}</Text>
-          )}
+            {errors.location && (
+              <Text style={styles.errorText}>{errors.location}</Text>
+            )}
 
-          {/* Register Button */}
-          <TouchableOpacity
-            style={styles.registerButton}
-            onPress={handleRegister}>
-            <Text style={styles.registerButtonText}>{loading? "waiting..": "Register"}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.LoginButton}
-            onPress={()=> navigation.navigate("Login")}>
-            <Text style={styles.LoginButtonText}>Already have account</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-      )
-    }
+            {/* Register Button */}
+            <TouchableOpacity
+              style={styles.registerButton}
+              onPress={handleRegister}>
+              <Text style={styles.registerButtonText}>
+                {loading ? 'waiting..' : 'Register'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.LoginButton}
+              onPress={() => navigation.navigate('Login')}>
+              <Text style={styles.LoginButtonText}>Already have account</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      )}
 
       {/* Date Picker */}
       {showDatePicker && (
@@ -346,11 +352,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingVertical:18,
+    paddingVertical: 18,
     justifyContent: 'center',
   },
   header: {
@@ -372,7 +377,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    marginTop:12,
+    marginTop: 12,
     fontWeight: '600',
     color: '#333',
   },
@@ -382,8 +387,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     // paddingBottom: 5,
-
-   
   },
   input: {
     flex: 1,
@@ -398,7 +401,7 @@ const styles = StyleSheet.create({
   pickerContainer: {
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    marginBottom:4,
+    marginBottom: 4,
   },
   picker: {
     height: 50,
@@ -421,24 +424,22 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  LoginButton:{
-     marginVertical:4,
+  LoginButton: {
+    marginVertical: 4,
   },
-showMapButton:{
-
-},
-showMapText:{
-  fontSize: 16,
-  fontWeight: 600,
-  color: "white",
-  backgroundColor: "#4CAF50",
-  padding: 10,
-  borderRadius: 8,
-},
-  LoginButtonText:{
-    color:"#578FCA",
-    fontSize:16,
-    textAlign:"center",
-    textDecorationLine:"underline"
-  }
+  showMapButton: {},
+  showMapText: {
+    fontSize: 16,
+    fontWeight: 600,
+    color: 'white',
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 8,
+  },
+  LoginButtonText: {
+    color: '#578FCA',
+    fontSize: 16,
+    textAlign: 'center',
+    textDecorationLine: 'underline',
+  },
 });

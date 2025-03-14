@@ -10,6 +10,8 @@ import { BiBuildings } from "react-icons/bi";
 import { MdOutlineBedroomParent } from "react-icons/md";
 import { FiUser } from "react-icons/fi";
 import { RiSettings5Line } from "react-icons/ri";
+import { TbBrandBooking } from "react-icons/tb";
+
 
 
 
@@ -79,7 +81,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 ">
         <NavLink className="flex items-center" to="/">
-          <h1 className='text-3xl font-bold text-white'>Room Scout</h1>
+          <h1 className='text-3xl font-bold text-white'>Room Finder</h1>
         </NavLink>
 
         <button
@@ -236,6 +238,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                <MdOutlineBedroomParent  size={20}/>
 
                   Rooms
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/booking"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('booking') && 'bg-graydark dark:bg-meta-4'
+                  }`}
+                >
+               <TbBrandBooking  size={20}/>
+
+                  Booked
                 </NavLink>
               </li>
               {/* <li>

@@ -1,29 +1,30 @@
+import React, {useState, useEffect, useRef} from 'react';
 import {
-  FlatList,
-  Image,
-  Modal,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
   View,
-  ActivityIndicator,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
   Alert,
+  StyleSheet,
+  StatusBar,
+  Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
-import React, {useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const DetailsScreen = ({route}) => {
-  const {id} = route.params;
-  const [data, setData] = useState(null);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [index, setIndex]= useState(0);
+const {width} = Dimensions.get('window');
 
-  console.log(id)
+const DetailsScreen = ({navigation, route}) => {
+  const [user, setUser] = useState();
+  const [room, setRoom] = useState();
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [favorite, setFavorite] = useState(false);
+  const scrollViewRef = useRef(null);
+  const {id} = route.params;
 
   useEffect(() => {
     const fetchUserAndRoom = async () => {
@@ -49,11 +50,11 @@ const DetailsScreen = ({route}) => {
           }
 
           const roomData = await response.json();
-          console.log('Room details:', roomData);
-          setData(roomData.data);
+          setRoom(roomData.data);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
+        Alert.alert('Error', 'Failed to load room details. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -62,281 +63,514 @@ const DetailsScreen = ({route}) => {
     fetchUserAndRoom();
   }, [id]);
 
-
   const handleBook = async () => {
+    if (!user) {
+      Alert.alert('Sign In Required', 'Please sign in to book this room.');
+      return;
+    }
+
     const val = {
-      room_id: data?.r_id,
+      room_id: room?.r_id,
       user_id: user?.user?.id,
-      price: data?.price,
+      owner_id: room?.u_id,
+      price: room?.price,
     };
-  
+
     try {
+      setBookingLoading(true);
       const res = await fetch(
-        "https://backend-roomfinder-api.onrender.com/bookings/request-booking",
+        'https://backend-roomfinder-api.onrender.com/bookings/request-booking',
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${user.accessToken}`,
           },
           body: JSON.stringify(val),
-        }
+        },
       );
-  
+
       const result = await res.json();
-  
+
       if (res.ok) {
-        Alert.alert("Success", "Your booking request has been sent!", [
-          { text: "OK" },
-        ]);
+        Alert.alert(
+          'Booking Successful',
+          'Your booking request has been sent! We will notify you when the owner responds.',
+          [{text: 'OK'}],
+        );
       } else {
-        Alert.alert("Error", result.message || "Failed to book the room.");
+        Alert.alert(
+          'Booking Failed',
+          result.message || 'Failed to book the room.',
+        );
       }
     } catch (error) {
-      console.error("Error booking room:", error);
-      Alert.alert("Error", "Something went wrong. Please try again later.");
+      console.error('Error booking room:', error);
+      Alert.alert('Error', 'Something went wrong. Please try again later.');
+    } finally {
+      setBookingLoading(false);
     }
   };
-  
+
+  const onImageChange = e => {
+    const contentOffset = e.nativeEvent.contentOffset;
+    const viewSize = e.nativeEvent.layoutMeasurement;
+    const index = Math.floor(contentOffset.x / viewSize.width);
+    setActiveImageIndex(index);
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#578FCA" />
+        <Text style={styles.loadingText}>Loading room details...</Text>
+      </View>
+    );
+  }
+
+  if (!room) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>No room details found</Text>
+      </View>
+    );
+  }
+
+  console.log(room);
+
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#578FCA" />
-          <Text>Loading room details...</Text>
-        </View>
-      ) : (
-        <ScrollView>
-          {data?.room_image_url && (
-            <>
-              <Image
-                source={{uri: data?.room_image_url[index]}}
-                style={styles.image}
-              />
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={{width: '93%', marginHorizontal: 'auto'}}>
-                {data?.room_image_url?.map((image, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => setIndex(index)}>
-                    <Image source={{uri: image}} style={styles.extraImage} />
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </>
-          )}
+    <View style={styles.mainContainer}>
 
-          <View style={styles.container}>
-            <View style={styles.detailsTop}>
-              <Text style={styles.name}>{data?.title}</Text>
-              <Text style={styles.price}>Rs.{data?.price}</Text>
-            </View>
-
-            <View style={styles.address}>
-              <Icon name="location-on" size={18} />
-              <Text>{data?.address}</Text>
-            </View>
-
-            <View style={styles.available}>
-              <View style={styles.cardLocation}>
-                <Icon name="bed" size={15} color="gray" />
-                <Text style={styles.availableName}>
-                  Type: {data?.room_type}
-                </Text>
-              </View>
-              <View style={styles.cardLocation}>
-                <Icon name="kitchen" size={15} color="gray" />
-                <Text style={styles.availableName}>
-                  Status: {data?.room_status}
-                </Text>
-              </View>
-              <View style={styles.cardLocation}>
-                <Icon name="crop-square" size={15} color="gray" />
-                <Text style={styles.availableName}>
-                  Room: {data?.no_of_room}
-                </Text>
-              </View>
-            </View>
-
-            <Text style={styles.description}>{data?.description}</Text>
-          </View>
-
-          <ScrollView horizontal={true} style={styles.facilityContainer}>
-            <View style={styles.facility}>
-              <Icon name="wifi" size={24} color="#4CAF50" />
-              <Text style={styles.facilityText}>
-                {data?.wifi ? 'Available' : 'Not Available'}
-              </Text>
-            </View>
-            <View style={styles.facility}>
-              <IconMaterial
-                name="lightbulb-on-outline"
-                size={24}
-                color="#FFEB3B"
-              />
-              <Text style={styles.facilityText}>
-                {data?.electricity ? 'Available' : 'Not Available'}
-              </Text>
-            </View>
-            <View style={styles.facility}>
-              <Icon name="water-drop" size={24} color="#2196F3" />
-              <Text style={styles.facilityText}>
-                {data?.water ? 'Available' : 'Not Available'}
-              </Text>
-            </View>
-            <View style={styles.facility}>
-              <Icon name="directions-car" size={24} color="#2196F3" />
-              <Text style={styles.facilityText}>
-                {data?.parking ? 'Available' : 'Not Available'}
-              </Text>
-            </View>
+      <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}>
+        {/* Image Carousel */}
+        <View style={styles.imageContainer}>
+          <ScrollView
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={onImageChange}
+            scrollEventThrottle={16}>
+            {room?.room_image_url?.map((image, index) => (
+              <Image key={index} source={{uri: image}} style={styles.image} />
+            ))}
           </ScrollView>
 
-          {/* Book Now Button */}
-          <TouchableOpacity style={styles.bookNowButton} onPress={handleBook}>
-            <Text style={styles.bookNowText}>Book Now</Text>
+          {/* Pagination dots */}
+          <View style={styles.pagination}>
+            {room?.room_image_url?.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.paginationDot,
+                  activeImageIndex === index && styles.paginationDotActive,
+                ]}
+              />
+            ))}
+          </View>
+
+          {/* Status tag */}
+          <View
+            style={[
+              styles.statusTag,
+              room?.room_status === 'available'
+                ? styles.availableTag
+                : styles.bookedTag,
+            ]}>
+            <Text style={styles.statusText}>
+              {room?.room_status === 'available' ? 'Available' : 'Booked'}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.detailsContainer}>
+          {/* Title and price section */}
+          <View style={styles.titleSection}>
+            <Text style={styles.title}>{room?.title}</Text>
+            <Text style={styles.price}>
+              Rs. {room?.price}
+              <Text style={styles.month}>/month</Text>
+            </Text>
+          </View>
+
+          {/* Address with location icon */}
+          <View style={styles.addressContainer}>
+            <Icon name="location-on" size={20} color="#578FCA" />
+            <Text style={styles.address} numberOfLines={2}>
+              {room?.address}
+            </Text>
+          </View>
+
+          {/* Description */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Description</Text>
+            <Text style={styles.description}>{room?.description}</Text>
+          </View>
+
+          {/* Details */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Details</Text>
+            <View style={styles.detailsGrid}>
+              <View style={styles.detailItem}>
+                <Icon name="category" size={22} color="#578FCA" />
+                <Text style={styles.detailText}>{room?.room_type}</Text>
+              </View>
+              <View style={styles.detailItem}>
+                <Icon name="aspect-ratio" size={22} color="#578FCA" />
+                <Text style={styles.detailText}>{room?.areaSize}</Text>
+              </View>
+              <View style={styles.detailItem}>
+                <Icon name="meeting-room" size={22} color="#578FCA" />
+                <Text style={styles.detailText}>
+                  {room?.no_of_room} Room(s)
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Amenities */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Amenities</Text>
+            <View style={styles.amenitiesContainer}>
+              <View style={styles.amenityRow}>
+                <View style={styles.amenityItem}>
+                  <Icon
+                    name="wifi"
+                    size={22}
+                    color={room?.wifi ? '#578FCA' : '#cccccc'}
+                  />
+                  <Text
+                    style={[
+                      styles.amenityText,
+                      !room?.wifi && styles.unavailable,
+                    ]}>
+                    WiFi
+                  </Text>
+                </View>
+                <View style={styles.amenityItem}>
+                  <Icon
+                    name="local-parking"
+                    size={22}
+                    color={room?.parking ? '#578FCA' : '#cccccc'}
+                  />
+                  <Text
+                    style={[
+                      styles.amenityText,
+                      !room?.parking && styles.unavailable,
+                    ]}>
+                    Parking
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.amenityRow}>
+                <View style={styles.amenityItem}>
+                  <Icon
+                    name="local-drink"
+                    size={22}
+                    color={room?.water ? '#578FCA' : '#cccccc'}
+                  />
+                  <Text
+                    style={[
+                      styles.amenityText,
+                      !room?.water && styles.unavailable,
+                    ]}>
+                    Water
+                  </Text>
+                </View>
+                <View style={styles.amenityItem}>
+                  <Icon
+                    name="bolt"
+                    size={22}
+                    color={room?.electricity ? '#578FCA' : '#cccccc'}
+                  />
+                  <Text
+                    style={[
+                      styles.amenityText,
+                      !room?.electricity && styles.unavailable,
+                    ]}>
+                    Electricity
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.amenityRow}>
+                <View style={styles.amenityItem}>
+                  <Icon
+                    name="restore-from-trash"
+                    size={22}
+                    color={room?.disposal_charge ? '#578FCA' : '#cccccc'}
+                  />
+                  <Text
+                    style={[
+                      styles.amenityText,
+                      !room?.disposal_charge && styles.unavailable,
+                    ]}>
+                    Disposal
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+
+      <View style={styles.footer}>
+        {room?.room_status === 'available' && (
+          <TouchableOpacity
+            style={styles.bookButton}
+            onPress={handleBook}
+            disabled={bookingLoading}>
+            {bookingLoading ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <>
+                <Icon name="bookmark" size={20} color="white" />
+                <Text style={styles.buttonText}>Book Now</Text>
+              </>
+            )}
           </TouchableOpacity>
-        </ScrollView>
-      )}
-    </SafeAreaView>
+        )}
+      </View>
+    </View>
   );
 };
 
-export default DetailsScreen;
-
 const styles = StyleSheet.create({
-  safeArea: {
+  mainContainer: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f8f9fa',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f8f9fa',
   },
-  container: {
-    padding: 18,
+  loadingText: {
+    fontSize: 16,
+    color: '#578FCA',
+    marginTop: 12,
+  },
+  header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    zIndex: 10,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  favoriteButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    position: 'relative',
+    height: 300,
   },
   image: {
-    width: '100%',
-    height: 400,
+    width: width,
+    height: 300,
     resizeMode: 'cover',
-    marginBottom: 18,
   },
-  extraImagesHeading: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginTop: 12,
+  pagination: {
+    position: 'absolute',
+    bottom: 20,
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    marginHorizontal: 4,
+  },
+  paginationDotActive: {
+    backgroundColor: '#FFF',
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+  },
+  statusTag: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+  },
+  availableTag: {
+    backgroundColor: '#4CAF50',
+  },
+  bookedTag: {
+    backgroundColor: '#FF5722',
+  },
+  statusText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  detailsContainer: {
+    backgroundColor: '#FFF',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    marginTop: -20,
+    padding: 24,
+    paddingBottom: 100,
+  },
+  titleSection: {
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#222',
     marginBottom: 8,
   },
-  extraImage: {
-    width: 100,
-    height: 100,
-    marginRight: 12,
-    borderRadius: 8,
-    resizeMode: 'cover',
+  price: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#578FCA',
+  },
+  month: {
+    fontSize: 16,
+    color: '#666',
+    fontWeight: 'normal',
+  },
+  addressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    backgroundColor: '#f0f8ff',
+    padding: 12,
+    borderRadius: 12,
   },
   address: {
-    flexDirection: 'row',
-  },
-  detailsTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  name: {
-    fontSize: 22,
-    fontWeight: '600',
-  },
-  price: {
-    fontSize: 20,
-    color: '#FF5733',
-    fontWeight: '500',
-  },
-  location: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  available: {
-    marginTop: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  availableName: {
+    fontSize: 15,
+    color: '#444',
     marginLeft: 8,
-    fontSize: 14,
-    color: '#555',
+    flex: 1,
   },
-  cardLocation: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 6,
+  section: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 12,
   },
   description: {
     fontSize: 16,
-    fontWeight: '400',
-    textAlign: 'justify',
-    marginTop: 12,
-    color: '#333',
+    lineHeight: 24,
+    color: '#555',
   },
-  facilityContainer: {
-    marginTop: 12,
-
-    marginBottom: 24,
-    paddingHorizontal: 18,
+  detailsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
-  facility: {
+  detailItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    marginRight: 4,
-    backgroundColor: '#f4f4f4',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 30,
+    width: '48%',
+    backgroundColor: '#f5f7fa',
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 12,
   },
-  facilityText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginLeft: 6,
+  detailText: {
+    marginLeft: 8,
+    fontSize: 15,
+    color: '#444',
   },
-  bookNowButton: {
-    backgroundColor: '#578FCA',
-    paddingVertical: 14,
-    marginHorizontal: 18,
-    borderRadius: 10,
-    marginBottom: 18,
+  amenitiesContainer: {
+    backgroundColor: '#f5f7fa',
+    borderRadius: 12,
+    padding: 16,
+  },
+  amenityRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  amenityItem: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 16,
+    width: '48%',
   },
-  bookNowText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+  amenityText: {
+    marginLeft: 8,
+    fontSize: 15,
+    color: '#444',
   },
-
-  modalBackground: {
+  unavailable: {
+    color: '#999',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#FFF',
+    padding: 16,
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: -3},
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  deleteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FF5252',
+    borderRadius: 12,
+    padding: 16,
+    justifyContent: 'center',
+    elevation: 2,
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    marginRight: 8,
   },
-  modalContent: {
-    justifyContent: 'center',
+  bookButton: {
+    flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#578FCA',
+    borderRadius: 12,
+    padding: 16,
+    justifyContent: 'center',
+    elevation: 2,
+    flex: 1,
+    marginLeft: 8,
   },
-  modalImage: {
-    width: 350,
-    height: 500,
-    borderRadius: 10,
-    resizeMode: 'contain',
+  buttonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+    marginLeft: 8,
   },
 });
+
+export default DetailsScreen;

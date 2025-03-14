@@ -46,7 +46,10 @@ const OwnerScreen = ({navigation}) => {
             },
           },
         );
+
+        console.log(res);
         const data = await res.json();
+        console.log(data);
         setRooms(data.data);
       } catch {
       } finally {
@@ -55,27 +58,39 @@ const OwnerScreen = ({navigation}) => {
     fetchRoom();
   }, [user]);
 
+  const bookedRooms =
+    rooms?.filter(room => room.room_status === 'occupied') || [];
+  const pendingRooms =
+    rooms?.filter(room => room.admin_approval === false) || [];
+
+  console.log(rooms);
+
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor="#0077b6" barStyle="dark-content" />
       <ScrollView>
         {/* Statistics Cards */}
         <View style={styles.statsContainer}>
-          <TouchableOpacity onPress={()=> navigation.navigate("Home")} style={styles.statCard}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Home')}
+            style={styles.statCard}>
             <Icon name="dashboard" size={30} color="#673ab7" />
             <Text style={styles.statTitle}>Total Listings</Text>
             <Text style={styles.statValue}>{rooms?.length || 0}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={()=> navigation.navigate("Booked")}  style={styles.statCard}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Booked')}
+            style={styles.statCard}>
             <Icon name="check-circle" size={30} color="#0077b6" />
             <Text style={styles.statTitle}>Booked</Text>
-            <Text style={styles.statValue}>3</Text>
+            <Text style={styles.statValue}>{bookedRooms.length}</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=> navigation.navigate("Pending")}  style={styles.statCard}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Pending')}
+            style={styles.statCard}>
             <Icon name="hourglass-empty" size={30} color="#ff9800" />
             <Text style={styles.statTitle}>Pending</Text>
-            <Text style={styles.statValue}>2</Text>
+            <Text style={styles.statValue}>{pendingRooms.length}</Text>
           </TouchableOpacity>
         </View>
 
@@ -95,17 +110,16 @@ const OwnerScreen = ({navigation}) => {
         )}
       </ScrollView>
 
-      {/* Floating Add Button */}
+
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => navigation.navigate('AddRoom')}>
+        onPress={() => navigation.navigate('Add')}>
         <Icon name="add" size={30} color="white" />
       </TouchableOpacity>
     </View>
   );
 };
 
-/** Listing Card Component */
 const ListingCard = ({item, navigation}) => (
   <TouchableOpacity
     onPress={() => navigation.navigate('OwnerDetails', {id: item.r_id})}
@@ -116,6 +130,29 @@ const ListingCard = ({item, navigation}) => (
       <Text style={styles.price}>Rs. {item.price}/month</Text>
       <Text style={styles.location}>
         <Icon name="location-on" size={14} color="gray" /> {item.address}
+      </Text>
+      <Text
+        style={{
+          paddingHorizontal: 2,
+          paddingVertical: 4,
+          fontSize: 12,
+          borderRadius: 8,
+          width: 55,
+          textAlign: 'center',
+          marginVertical: 2,
+          color: 'white',
+          backgroundColor:
+            item.room_status === 'occupied'
+              ? 'rgba(225, 53, 69, 0.8)' 
+              : item.admin_approval
+              ? 'rgba(40, 167, 69, 0.8)' 
+              : 'rgba(255, 193, 7, 0.8)', 
+        }}>
+        {item.room_status === 'occupied'
+          ? 'Booked'
+          : item.admin_approval
+          ? 'Available'
+          : 'Pending'}
       </Text>
     </View>
   </TouchableOpacity>
@@ -141,7 +178,8 @@ const styles = StyleSheet.create({
     padding: 15,
     alignItems: 'center',
     width: screenWidth / 3 - 16,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#e3e3e3',
   },
   statTitle: {
     fontSize: 12,
@@ -169,7 +207,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 12,
     padding: 12,
-    elevation: 4,
+    borderWidth: 1,
+    borderColor: '#e3e3e3',
     marginBottom: 10,
     alignItems: 'center',
     width: screenWidth - 32,
@@ -200,7 +239,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'gray',
   },
-  /** Floating Add Button **/
   addButton: {
     position: 'absolute',
     bottom: 60,

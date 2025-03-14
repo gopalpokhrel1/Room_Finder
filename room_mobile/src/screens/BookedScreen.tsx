@@ -47,9 +47,8 @@ const BookedScreen = ({navigation}) => {
           },
         );
         const data = await res.json();
-        // Filter rooms where room_status is "booked"
         const filteredRooms = data.data.filter(
-          room => room.room_status === 'booked',
+          room => room.room_status === 'occupied',
         );
 
         setBookedRooms(filteredRooms);
@@ -61,9 +60,10 @@ const BookedScreen = ({navigation}) => {
     fetchBookedRooms();
   }, [user]);
 
+
+
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor="#0077b6" barStyle="dark-content" />
       <Text style={styles.sectionTitle}>Booked Rooms</Text>
       {bookedRooms.length === 0 ? (
         <Text style={styles.emptyText}>No rooms have been booked yet.</Text>

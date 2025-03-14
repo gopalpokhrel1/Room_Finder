@@ -38,7 +38,9 @@ const SearchScreen = ({navigation}) => {
     const fetchRoom = async () => {
       try {
         const res = await fetch(
-          isSearching? `https://backend-roomfinder-api.onrender.com/rooms/search/${searchQuery}`: 'https://backend-roomfinder-api.onrender.com/rooms/getrooms',
+          isSearching
+            ? `https://backend-roomfinder-api.onrender.com/rooms/search/${searchQuery}`
+            : 'https://backend-roomfinder-api.onrender.com/rooms/getrooms',
           {
             method: 'GET',
             headers: {
@@ -52,6 +54,7 @@ const SearchScreen = ({navigation}) => {
         }
 
         const data = await res.json();
+        data;
         setData(data.data);
       } catch (error) {
         console.error('Failed to fetch rooms:', error);
@@ -65,15 +68,13 @@ const SearchScreen = ({navigation}) => {
 
   const inputAnimValue = new Animated.Value(0);
 
-
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     setIsSearching(true);
 
-    // Simulate network request
     setTimeout(() => {
       if (query.length > 0) {
-        const filtered = data.filter(
+        const filtered = data?.filter(
           item =>
             item.title.toLowerCase().includes(query.toLowerCase()) ||
             item.address.toLowerCase().includes(query.toLowerCase()) ||
@@ -87,7 +88,6 @@ const SearchScreen = ({navigation}) => {
     }, 300);
   };
 
-  // Focus effect for search input
   useEffect(() => {
     const focusAnimation = () => {
       Animated.timing(inputAnimValue, {
@@ -108,7 +108,7 @@ const SearchScreen = ({navigation}) => {
   const renderRoomItem = ({item}) => (
     <TouchableOpacity
       style={styles.listingItem}
-      onPress={() => navigation.navigate("Details", {id:item.r_id})}>
+      onPress={() => navigation.navigate('Details', {id: item.r_id})}>
       <View style={styles.listingImageContainer}>
         <View style={styles.listingImagePlaceholder}>
           <Image
@@ -129,14 +129,20 @@ const SearchScreen = ({navigation}) => {
           <View
             style={[
               styles.availabilityBadge,
-              {backgroundColor: item.available ==="available" ? '#e6f7ee' : '#ffe6e6'},
+              {
+                backgroundColor:
+                  item.available === 'available' ? '#e6f7ee' : '#ffe6e6',
+              },
             ]}>
             <Text
               style={[
                 styles.availabilityText,
-                {color: item.room_status ==="available" ? '#0c8a42' : '#db3030'},
+                {
+                  color:
+                    item.room_status === 'available' ? '#0c8a42' : '#db3030',
+                },
               ]}>
-              {item.room_status === "available" ? 'Available' : 'Taken'}
+              {item.room_status === 'available' ? 'Available' : 'Taken'}
             </Text>
           </View>
         </View>
@@ -182,23 +188,23 @@ const SearchScreen = ({navigation}) => {
 
       {/* Search Results */}
       <FlatList
-        data={searchQuery.length > 0 ? filteredData : data}
+        data={searchQuery?.length > 0 ? filteredData : data}
         keyExtractor={item => item.id}
         renderItem={renderRoomItem}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContainer}
         ListHeaderComponent={
-          searchQuery.length > 0 ? (
+          searchQuery?.length > 0 ? (
             <Text style={styles.resultsHeader}>
-              {filteredData.length}{' '}
-              {filteredData.length === 1 ? 'result' : 'results'} found
+              {filteredData?.length}{' '}
+              {filteredData?.length === 1 ? 'result' : 'results'} found
             </Text>
           ) : (
             <Text style={styles.resultsHeader}>All Available Listings</Text>
           )
         }
         ListEmptyComponent={
-          searchQuery.length > 0 && !isSearching ? (
+          searchQuery?.length > 0 && !isSearching ? (
             <View style={styles.noResultsContainer}>
               <Text style={styles.noResults}>
                 No rooms or flats found matching "{searchQuery}"

@@ -5,7 +5,7 @@ import AuthNavigation from './src/navigation/AuthNavigation';
 const App = () => {
   return (
     <>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" />
       <NavigationContainer>
         <AuthNavigation />
       </NavigationContainer>

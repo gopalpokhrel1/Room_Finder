@@ -22,7 +22,6 @@ const HomeOwnerScreen = () => {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = React.useState([]);
 
-
   const getUser = async () => {
     try {
       const userString = await AsyncStorage.getItem('user');
@@ -96,7 +95,6 @@ const HomeOwnerScreen = () => {
     });
   };
 
-
   const handleImageSelect = () => {
     if (form.files.length < 5) {
       launchImageLibrary(
@@ -105,9 +103,8 @@ const HomeOwnerScreen = () => {
           includeBase64: false,
         },
         response => {
-          console.log(response)
+          response;
           if (response.assets) {
-            
             const newImage = response.assets[0].uri;
             setForm({
               ...form,
@@ -149,16 +146,14 @@ const HomeOwnerScreen = () => {
     formData.append('room_status', 'available');
     formData.append('no_of_room', form.no_of_room);
 
-
     // Append files to FormData
     if (form.files.length > 0) {
       form.files.forEach((fileUri, index) => {
         formData.append('files', {
-          uri:fileUri,
-          name:`photo${index}.jpg`,
+          uri: fileUri,
+          name: `photo${index}.jpg`,
           type: 'image/jpg',
-        }
-        );
+        });
       });
     } else {
     }
@@ -168,9 +163,10 @@ const HomeOwnerScreen = () => {
       formData.append(key, form.facilities[key]);
     });
 
-    console.log(formData);
+    formData;
     try {
       setLoading(true);
+      console.log("before log")
 
       const response = await fetch(
         'https://backend-roomfinder-api.onrender.com/rooms/createroom',
@@ -181,15 +177,16 @@ const HomeOwnerScreen = () => {
 
             Authorization: `Bearer ${accessToken}`,
           },
-          body: formData, 
+          body: formData,
         },
       );
 
+      console.log(response);
       const data = await response.json();
 
       if (response.ok) {
         Alert.alert('Success', 'Room listed successfully!');
-        console.log('API Response:', data);
+        'API Response:', data;
       } else {
         Alert.alert('Error', data.message || 'Something went wrong');
       }
@@ -363,7 +360,10 @@ const HomeOwnerScreen = () => {
       {step === 3 && (
         <>
           <Text style={styles.sectionTitle}>📍 Select Location</Text>
-          <LocationPicker setShowMap={setShowMap} onLocationSelect={handleLocationSelect} />
+          <LocationPicker
+            setShowMap={setShowMap}
+            onLocationSelect={handleLocationSelect}
+          />
 
           <View style={styles.navButtons}>
             <TouchableOpacity
@@ -414,7 +414,12 @@ const HomeOwnerScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {paddingHorizontal: 16,paddingVertical:48, backgroundColor: '#F8F9FA', flex: 1},
+  container: {
+    paddingHorizontal: 16,
+    paddingVertical: 48,
+    backgroundColor: '#F8F9FA',
+    flex: 1,
+  },
   tabContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',

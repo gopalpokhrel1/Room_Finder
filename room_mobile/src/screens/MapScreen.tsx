@@ -23,38 +23,8 @@ const CustomMarker = () => {
   );
 };
 
-const CustomCallOutView = () => {
-  return (
-    <View style={styles.calloutContainer}>
-      <Text style={styles.calloutText}>
-        Text is here dkjdkfjdjfkdjfeiojfjfkdjfeiojfsdkfjeiojfkdjfoei
-      </Text>
-    </View>
-  );
-};
 
-const locations = [
-  {
-    id: 1,
-    title: 'Bhaktapur Durbar Square',
-    coordinate: {latitude: 27.671, longitude: 85.4296},
-  },
-  {
-    id: 2,
-    title: 'Nyatapola Temple',
-    coordinate: {latitude: 27.6722, longitude: 85.4286},
-  },
-  {
-    id: 3,
-    title: 'Dattatreya Temple',
-    coordinate: {latitude: 27.6735, longitude: 85.4278},
-  },
-  {
-    id: 4,
-    title: 'Taumadhi Square',
-    coordinate: {latitude: 27.6718, longitude: 85.4282},
-  },
-];
+
 
 const MapScreen = () => {
   const [permissionGranted, setPermissionGranted] = useState(false);
@@ -62,7 +32,7 @@ const MapScreen = () => {
     if (Platform.OS === 'android') {
       try {
         const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, // Correct permission
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
             title: 'Location Permission',
             message: 'This app requires location access to function properly.',
@@ -73,10 +43,10 @@ const MapScreen = () => {
         );
 
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('Location permission granted');
+          ('Location permission granted');
           setPermissionGranted(true); // Update state
         } else {
-          console.log('Location permission denied');
+          ('Location permission denied');
           setPermissionGranted(false);
         }
       } catch (err) {
@@ -116,7 +86,7 @@ const MapScreen = () => {
               key={index}
               coordinate={item.coordinate}
               title={item.title}
-              onDragEnd={(e)=> console.log({x: e.nativeEvent.coordinate })}
+              onDragEnd={(e)=> ({x: e.nativeEvent.coordinate })}
               ></Marker>
           );
         })} */}
