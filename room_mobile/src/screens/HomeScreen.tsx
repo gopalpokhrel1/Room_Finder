@@ -34,7 +34,7 @@ const HomeScreen = ({navigation}) => {
       try {
         setLoading(true);
         const response = await fetch(
-          'https://backend-roomfinder-api.onrender.com/recommend/rooms',
+          'api-end-point/recommend/rooms',
           {
             method: 'POST',
             headers: {
@@ -87,7 +87,7 @@ const HomeScreen = ({navigation}) => {
       try {
         setLoading(true);
         const response = await fetch(
-          'https://backend-roomfinder-api.onrender.com/rooms/nearby/2',
+          'api-end-point/rooms/nearby/2',
           {
             method: 'GET',
             headers: {
@@ -120,7 +120,7 @@ const HomeScreen = ({navigation}) => {
 
       try {
         const response = await fetch(
-          'https://backend-roomfinder-api.onrender.com/recommend/get-preferences',
+          'api-end-point/recommend/get-preferences',
           {
             method: 'GET',
             headers: {

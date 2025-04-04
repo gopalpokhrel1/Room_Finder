@@ -35,7 +35,7 @@ const LoginPage = () => {
     if (validateForm()) {
       try {
         setLoading(true)
-        const response = await fetch("https://backend-roomfinder-api.onrender.com/users/login", {
+        const response = await fetch("api-end-point/users/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -48,7 +48,7 @@ const NearestMapScreen = ({navigation}) => {
 
       try {
         const response = await fetch(
-          'https://backend-roomfinder-api.onrender.com/rooms/nearby/2',
+          'api-end-point/rooms/nearby/2',
           {
             method: 'GET',
             headers: {

@@ -11,7 +11,7 @@ export default function Flat() {
       setLoading(true);
       try {
         const res = await fetch(
-          "https://backend-roomfinder-api.onrender.com/admin/filter-flats",
+          "api-end-point/admin/filter-flats",
           {
             method: "GET",
             headers: {
@@ -33,7 +33,7 @@ export default function Flat() {
   const handleApprove = async (id) => {
     try {
       const res = await fetch(
-        `https://backend-roomfinder-api.onrender.com/admin/approve-room/${id}`,
+        `api-end-point/admin/approve-room/${id}`,
         {
           method: "PATCH",
           headers: {
@@ -51,7 +51,7 @@ export default function Flat() {
   const handleDecline = async (id: any) => {
     try {
       const res = await fetch(
-        `https://backend-roomfinder-api.onrender.com/admin/reject-room/${id}`,
+        `api-end-point/admin/reject-room/${id}`,
         {
           method: "PATCH",
           headers: {

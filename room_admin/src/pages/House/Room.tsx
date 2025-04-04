@@ -16,7 +16,7 @@ export default function Room() {
       setLoading(true);
       try {
         const res = await fetch(
-          "https://backend-roomfinder-api.onrender.com/admin/filter-rooms",
+          "api-end-point/admin/filter-rooms",
           {
             method: "GET",
             headers: {
@@ -38,7 +38,7 @@ export default function Room() {
   const handleApprove = async (id) => {
     try {
       const res = await fetch(
-        `https://backend-roomfinder-api.onrender.com/admin/approve-room/${id}`,
+        `api-end-point/admin/approve-room/${id}`,
         {
           method: "PATCH",
           headers: {
@@ -56,7 +56,7 @@ export default function Room() {
   const handleDeclineClick = async (id) => {
     try {
       const res = await fetch(
-        `https://backend-roomfinder-api.onrender.com/admin/reject-room/${id}`,
+        `api-end-point/admin/reject-room/${id}`,
         {
           method: "PATCH",
           headers: {

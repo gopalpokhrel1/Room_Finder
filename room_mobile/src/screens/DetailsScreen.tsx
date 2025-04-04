@@ -36,7 +36,7 @@ const DetailsScreen = ({navigation, route}) => {
 
         if (storedUser?.accessToken) {
           const response = await fetch(
-            `https://backend-roomfinder-api.onrender.com/rooms/get-room-details/${id}`,
+            `api-end-point/rooms/get-room-details/${id}`,
             {
               method: 'GET',
               headers: {
@@ -79,7 +79,7 @@ const DetailsScreen = ({navigation, route}) => {
     try {
       setBookingLoading(true);
       const res = await fetch(
-        'https://backend-roomfinder-api.onrender.com/bookings/request-booking',
+        'api-end-point/bookings/request-booking',
         {
           method: 'POST',
           headers: {

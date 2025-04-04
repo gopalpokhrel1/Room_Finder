@@ -40,7 +40,7 @@ const ExploreScreen = ({navigation}) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await fetch("https://backend-roomfinder-api.onrender.com/rooms/getrooms", {
+        const res = await fetch("api-end-point/rooms/getrooms", {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${user?.accessToken}`

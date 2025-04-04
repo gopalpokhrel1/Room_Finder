@@ -9,7 +9,7 @@ const TableThree = () => {
     const fetchUsers = async () => {
       try {
         const res = await fetch(
-          "https://backend-roomfinder-api.onrender.com/admin/gethomeOwners",
+          "api-end-point/admin/gethomeOwners",
           {
             method: "GET",
             headers: {

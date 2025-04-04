@@ -42,7 +42,7 @@ const OwnerDetailsScreen = ({navigation, route}) => {
 
       try {
         const res = await fetch(
-          `https://backend-roomfinder-api.onrender.com/rooms/get-room-details/${id}`,
+          `api-end-point/rooms/get-room-details/${id}`,
           {
             method: 'GET',
             headers: {

@@ -16,7 +16,7 @@ const ECommerce: React.FC = () => {
     const fetchStatus = async () => {
       try {
         const res = await fetch(
-          "https://backend-roomfinder-api.onrender.com/admin/users/stats",
+          "api-end-point/admin/users/stats",
           {
             method: "GET",
             headers: {
@@ -37,7 +37,7 @@ const ECommerce: React.FC = () => {
     const fetchFlats = async () => {
       try {
         const res = await fetch(
-          "https://backend-roomfinder-api.onrender.com/admin/roomkpis",
+          "api-end-point/admin/roomkpis",
           {
             method: "GET",
             headers: {

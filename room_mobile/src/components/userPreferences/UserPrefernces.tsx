@@ -64,7 +64,7 @@ const UserPreferences = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        'https://backend-roomfinder-api.onrender.com/recommend/set-preferences',
+        'api-end-point/recommend/set-preferences',
         {
           method: 'POST',
           headers: {

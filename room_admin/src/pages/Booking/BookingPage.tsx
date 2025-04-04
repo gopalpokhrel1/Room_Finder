@@ -9,7 +9,7 @@ export default function BookingPage() {
     const fetchBookings = async () => {
       try {
         const res = await fetch(
-          "https://backend-roomfinder-api.onrender.com/admin/all-bookings",
+          "api-end-point/admin/all-bookings",
           {
             method: "GET",
             headers: {

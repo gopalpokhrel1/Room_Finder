@@ -169,7 +169,7 @@ const HomeOwnerScreen = () => {
       console.log("before log")
 
       const response = await fetch(
-        'https://backend-roomfinder-api.onrender.com/rooms/createroom',
+        'api-end-point/rooms/createroom',
         {
           method: 'POST',
           headers: {

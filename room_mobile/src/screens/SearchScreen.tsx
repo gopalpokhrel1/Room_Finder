@@ -39,8 +39,8 @@ const SearchScreen = ({navigation}) => {
       try {
         const res = await fetch(
           isSearching
-            ? `https://backend-roomfinder-api.onrender.com/rooms/search/${searchQuery}`
-            : 'https://backend-roomfinder-api.onrender.com/rooms/getrooms',
+            ? `api-end-point/rooms/search/${searchQuery}`
+            : 'api-end-point/rooms/getrooms',
           {
             method: 'GET',
             headers: {

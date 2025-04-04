@@ -38,7 +38,7 @@ const BookedScreen = ({navigation}) => {
     const fetchBookedRooms = async () => {
       try {
         const res = await fetch(
-          'https://backend-roomfinder-api.onrender.com/rooms/homeowner/rooms',
+          'api-end-point/rooms/homeowner/rooms',
           {
             method: 'GET',
             headers: {

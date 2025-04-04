@@ -84,7 +84,7 @@ const RegisterScreen = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          'https://backend-roomfinder-api.onrender.com/users/signup',
+          'api-end-point/users/signup',
           {
             method: 'POST',
             headers: {

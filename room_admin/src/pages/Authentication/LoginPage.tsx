@@ -38,7 +38,7 @@ export default function LoginPage() {
     try {
       setLoading(true);
       const res = await fetch(
-        "https://backend-roomfinder-api.onrender.com/users/login",
+        "api-end-point/users/login",
         {
           method: "POST",
           headers: {

@@ -53,7 +53,7 @@ const BookingRequestsScreen = ({navigation}) => {
       setError(null);
 
       const response = await fetch(
-        'https://backend-roomfinder-api.onrender.com/bookings/get-booking-requests',
+        'api-end-point/bookings/get-booking-requests',
         {
           method: 'GET',
           headers: {
@@ -82,7 +82,7 @@ const BookingRequestsScreen = ({navigation}) => {
   const acceptBooking = async (id: any) => {
     try {
       const response = await fetch(
-        `https://backend-roomfinder-api.onrender.com/bookings/accept-booking`,
+        `api-end-point/bookings/accept-booking`,
         {
           method: 'POST',
           body: JSON.stringify({booking_id: id}),
@@ -112,7 +112,7 @@ const BookingRequestsScreen = ({navigation}) => {
           onPress: async () => {
             try {
               const response = await fetch(
-                `https://backend-roomfinder-api.onrender.com/bookings/delete-booking`,
+                `api-end-point/bookings/delete-booking`,
                 {
                   method: 'DELETE',
                   body: JSON.stringify({booking_id: id}),
